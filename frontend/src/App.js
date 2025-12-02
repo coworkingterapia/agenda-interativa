@@ -26,10 +26,6 @@ function App() {
   const input3Ref = useRef(null);
   const letterRef = useRef(null);
 
-  useEffect(() => {
-    seedDatabase();
-  }, []);
-
   const seedDatabase = async () => {
     try {
       await axios.post(`${API}/seed-profissionais`);
@@ -38,6 +34,10 @@ function App() {
       console.error("Erro ao popular banco:", e);
     }
   };
+
+  useEffect(() => {
+    seedDatabase();
+  }, []);
 
   const handleDigitChange = (value, setter, nextRef) => {
     if (/^[0-9]$/.test(value) || value === "") {

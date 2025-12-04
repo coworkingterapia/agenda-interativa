@@ -40,7 +40,7 @@ export default function Calendario() {
   const handleConfirm = () => {
     sessionStorage.setItem('selectedDate', selectedDate.toISOString());
     setShowConfirmPopup(false);
-    console.log('Data confirmada:', selectedDate);
+    navigate('/horarios');
   };
 
   const handleVoltar = () => {

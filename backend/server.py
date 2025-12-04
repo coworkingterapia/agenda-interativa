@@ -44,11 +44,13 @@ class Reserva(BaseModel):
     data: str
     sala: str
     horario: str
+    duracao_minutos: int = 60
 
 class ReservaCreate(BaseModel):
     data: str
     sala: str
     horario: str
+    duracao_minutos: int = 60
 
 
 @api_router.get("/")

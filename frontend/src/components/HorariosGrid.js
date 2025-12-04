@@ -33,19 +33,8 @@ export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, on
   const [horariosBloqueados, setHorariosBloqueados] = useState(new Set());
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (dataSelecionada) {
-      carregarReservas();
-    }
-  }, [dataSelecionada]);
-
-  useEffect(() => {
-    if (reservas.length > 0) {
-      calcularBloqueios();
-    }
-  }, [reservas, acrescimoMinutos]);
-
-  const carregarReservas = async () => {
+  const carregarReservas = useCallback(async () => {
+    if (!dataSelecionada) return;
     try {
       setLoading(true);
       const dataFormatada = dataSelecionada.toISOString().split('T')[0];
@@ -59,9 +48,9 @@ export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, on
     } finally {
       setLoading(false);
     }
-  };
+  }, [dataSelecionada]);
 
-  const calcularBloqueios = () => {
+  const calcularBloqueios = useCallback(() => {
     const bloqueados = new Set();
 
     reservas.forEach(reserva => {

@@ -121,9 +121,9 @@ async def create_reserva(reserva: ReservaCreate):
 
 @api_router.post("/seed-reservas")
 async def seed_reservas():
-    from datetime import datetime, timedelta
+    from datetime import timedelta
     
-    hoje = datetime.now()
+    hoje = datetime.now(timezone.utc)
     reservas = [
         {"data": hoje.strftime("%Y-%m-%d"), "sala": "01", "horario": "14:00"},
         {"data": hoje.strftime("%Y-%m-%d"), "sala": "02", "horario": "16:00"},

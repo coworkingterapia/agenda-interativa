@@ -30,7 +30,7 @@ export default function Calendar({ onSelectDate }) {
   const doisMesesAtras = new Date(hoje.getFullYear(), hoje.getMonth() - 2, 1);
   const dozeSemanasFuture = new Date(hoje.getTime() + (12 * 7 * 24 * 60 * 60 * 1000));
 
-  const carregarReservas = async () => {
+  const carregarReservas = useCallback(async () => {
     try {
       const response = await axios.get(`${API}/reservas`, {
         params: {
@@ -42,11 +42,11 @@ export default function Calendar({ onSelectDate }) {
     } catch (e) {
       console.error('Erro ao carregar reservas:', e);
     }
-  };
+  }, [currentDate]);
 
   useEffect(() => {
     carregarReservas();
-  }, [currentDate, carregarReservas]);
+  }, [carregarReservas]);
 
   const isFeriado = (dia, mes) => {
     return FERIADOS.some(f => f.dia === dia && f.mes === mes);

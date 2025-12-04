@@ -78,7 +78,7 @@ export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, on
     });
 
     setHorariosBloqueados(bloqueados);
-  }, [reservas, acrescimoMinutos]);
+  }, [reservas]);
 
   useEffect(() => {
     carregarReservas();

@@ -78,7 +78,17 @@ export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, on
     });
 
     setHorariosBloqueados(bloqueados);
-  };
+  }, [reservas, acrescimoMinutos]);
+
+  useEffect(() => {
+    carregarReservas();
+  }, [carregarReservas]);
+
+  useEffect(() => {
+    if (reservas.length > 0) {
+      calcularBloqueios();
+    }
+  }, [reservas, calcularBloqueios]);
 
   const verificarConflito = (horario) => {
     const horarioInicioMinutos = horarioParaMinutos(horario);

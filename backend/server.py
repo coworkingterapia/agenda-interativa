@@ -95,6 +95,52 @@ async def seed_profissionais():
     
     return {"message": f"{len(profissionais)} profissionais inseridos com sucesso"}
 
+@api_router.get("/reservas")
+async def get_reservas(mes: Optional[str] = None, ano: Optional[str] = None):
+    query = {}
+    if mes and ano:
+        query = {
+            "$expr": {
+                "$and": [
+                    {"$eq": [{"$month": {"$dateFromString": {"dateString": "$data"}}}, int(mes)]},
+                    {"$eq": [{"$year": {"$dateFromString": {"dateString": "$data"}}}, int(ano)]}
+                ]
+            }
+        }
+    
+    reservas = await db.reservas.find(query, {"_id": 0}).to_list(1000)
+    return reservas
+
+@api_router.post("/reservas", response_model=Reserva)
+async def create_reserva(reserva: ReservaCreate):
+    reserva_obj = Reserva(**reserva.model_dump())
+    doc = reserva_obj.model_dump()
+    
+    await db.reservas.insert_one(doc)
+    return reserva_obj
+
+@api_router.post("/seed-reservas")
+async def seed_reservas():
+    from datetime import datetime, timedelta
+    
+    hoje = datetime.now()
+    reservas = [
+        {"data": hoje.strftime("%Y-%m-%d"), "sala": "01", "horario": "14:00"},
+        {"data": hoje.strftime("%Y-%m-%d"), "sala": "02", "horario": "16:00"},
+        {"data": (hoje + timedelta(days=3)).strftime("%Y-%m-%d"), "sala": "03", "horario": "10:00"},
+        {"data": (hoje + timedelta(days=7)).strftime("%Y-%m-%d"), "sala": "01", "horario": "15:00"},
+        {"data": (hoje + timedelta(days=14)).strftime("%Y-%m-%d"), "sala": "02", "horario": "11:00"},
+        {"data": (hoje + timedelta(days=21)).strftime("%Y-%m-%d"), "sala": "04", "horario": "09:00"},
+    ]
+    
+    await db.reservas.delete_many({})
+    
+    for reserva_data in reservas:
+        reserva_obj = Reserva(**reserva_data)
+        await db.reservas.insert_one(reserva_obj.model_dump())
+    
+    return {"message": f"{len(reservas)} reservas inseridas com sucesso"}
+
 
 app.include_router(api_router)
 

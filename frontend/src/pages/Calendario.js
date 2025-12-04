@@ -14,15 +14,6 @@ export default function Calendario() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
-  useEffect(() => {
-    const profissionalNome = sessionStorage.getItem('profissionalNome');
-    if (!profissionalNome) {
-      navigate('/');
-    }
-    
-    seedReservas();
-  }, [navigate]);
-
   const seedReservas = async () => {
     try {
       await axios.post(`${API}/seed-reservas`);
@@ -31,6 +22,15 @@ export default function Calendario() {
       console.error('Erro ao popular reservas:', e);
     }
   };
+
+  useEffect(() => {
+    const profissionalNome = sessionStorage.getItem('profissionalNome');
+    if (!profissionalNome) {
+      navigate('/');
+    }
+    
+    seedReservas();
+  }, [navigate]);
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);

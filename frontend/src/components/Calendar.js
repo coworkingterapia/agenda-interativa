@@ -46,7 +46,6 @@ export default function Calendar({ onSelectDate }) {
 
   useEffect(() => {
     carregarReservas();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [carregarReservas]);
 
   const isFeriado = (dia, mes) => {

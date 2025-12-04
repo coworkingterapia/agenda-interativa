@@ -121,18 +121,23 @@ async def create_reserva(reserva: ReservaCreate):
     await db.reservas.insert_one(doc)
     return reserva_obj
 
+@api_router.get("/reservas-por-data")
+async def get_reservas_por_data(data: str):
+    reservas = await db.reservas.find({"data": data}, {"_id": 0}).to_list(1000)
+    return reservas
+
 @api_router.post("/seed-reservas")
 async def seed_reservas():
     from datetime import timedelta
     
     hoje = datetime.now(timezone.utc)
     reservas = [
-        {"data": hoje.strftime("%Y-%m-%d"), "sala": "01", "horario": "14:00"},
-        {"data": hoje.strftime("%Y-%m-%d"), "sala": "02", "horario": "16:00"},
-        {"data": (hoje + timedelta(days=3)).strftime("%Y-%m-%d"), "sala": "03", "horario": "10:00"},
-        {"data": (hoje + timedelta(days=7)).strftime("%Y-%m-%d"), "sala": "01", "horario": "15:00"},
-        {"data": (hoje + timedelta(days=14)).strftime("%Y-%m-%d"), "sala": "02", "horario": "11:00"},
-        {"data": (hoje + timedelta(days=21)).strftime("%Y-%m-%d"), "sala": "04", "horario": "09:00"},
+        {"data": hoje.strftime("%Y-%m-%d"), "sala": "01", "horario": "14:00", "duracao_minutos": 60},
+        {"data": hoje.strftime("%Y-%m-%d"), "sala": "02", "horario": "16:00", "duracao_minutos": 75},
+        {"data": (hoje + timedelta(days=3)).strftime("%Y-%m-%d"), "sala": "03", "horario": "10:00", "duracao_minutos": 60},
+        {"data": (hoje + timedelta(days=7)).strftime("%Y-%m-%d"), "sala": "01", "horario": "15:00", "duracao_minutos": 90},
+        {"data": (hoje + timedelta(days=14)).strftime("%Y-%m-%d"), "sala": "02", "horario": "11:00", "duracao_minutos": 60},
+        {"data": (hoje + timedelta(days=21)).strftime("%Y-%m-%d"), "sala": "04", "horario": "09:00", "duracao_minutos": 60},
     ]
     
     await db.reservas.delete_many({})

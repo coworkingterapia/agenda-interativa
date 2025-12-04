@@ -37,6 +37,19 @@ class ValidateIDResponse(BaseModel):
     profissional: Optional[Profissional] = None
     message: str
 
+class Reserva(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    data: str
+    sala: str
+    horario: str
+
+class ReservaCreate(BaseModel):
+    data: str
+    sala: str
+    horario: str
+
 
 @api_router.get("/")
 async def root():

@@ -42,7 +42,7 @@ export default function Horarios() {
     sessionStorage.setItem('horarioSelecionado', horarioSelecionado);
     sessionStorage.setItem('acrescimoMinutos', acrescimoMinutos.toString());
     setShowConfirmPopup(false);
-    console.log('Horário confirmado:', horarioSelecionado);
+    navigate('/acrescimo');
   };
 
   const handleVoltar = () => {

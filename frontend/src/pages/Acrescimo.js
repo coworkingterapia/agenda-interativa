@@ -31,6 +31,18 @@ export default function Acrescimo() {
   const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const carregarReservas = async (data) => {
+    try {
+      const dataFormatada = data.toISOString().split('T')[0];
+      const response = await axios.get(`${API}/reservas-por-data`, {
+        params: { data: dataFormatada }
+      });
+      setReservas(response.data);
+    } catch (e) {
+      console.error('Erro ao carregar reservas:', e);
+    }
+  };
+
   useEffect(() => {
     const profissionalNome = sessionStorage.getItem('profissionalNome');
     const selectedDateStr = sessionStorage.getItem('selectedDate');
@@ -47,18 +59,6 @@ export default function Acrescimo() {
     
     carregarReservas(date);
   }, [navigate]);
-
-  const carregarReservas = async (data) => {
-    try {
-      const dataFormatada = data.toISOString().split('T')[0];
-      const response = await axios.get(`${API}/reservas-por-data`, {
-        params: { data: dataFormatada }
-      });
-      setReservas(response.data);
-    } catch (e) {
-      console.error('Erro ao carregar reservas:', e);
-    }
-  };
 
   const verificarConflito = useCallback((minutosAcrescimo) => {
     if (!horarioSelecionado || reservas.length === 0) {

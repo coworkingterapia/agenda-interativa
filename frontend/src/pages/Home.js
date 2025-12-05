@@ -21,6 +21,7 @@ export default function Home() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [profissionalNome, setProfissionalNome] = useState("");
+  const [profissionalStatus, setProfissionalStatus] = useState("");
 
   const input1Ref = useRef(null);
   const input2Ref = useRef(null);
@@ -55,7 +56,9 @@ export default function Home() {
         setIsValidID(true);
         setInvalidAttempts(0);
         setProfissionalNome(response.data.profissional.nome);
+        setProfissionalStatus(response.data.profissional.status_tratamento);
         sessionStorage.setItem('profissionalNome', response.data.profissional.nome);
+        sessionStorage.setItem('profissionalStatus', response.data.profissional.status_tratamento);
         sessionStorage.setItem('idProfissional', idToValidate);
       } else {
         setIsValidID(false);
@@ -99,6 +102,13 @@ export default function Home() {
   };
 
   const isButtonsEnabled = isValidID && !noID;
+
+  const getSaudacao = () => {
+    if (!profissionalNome || !profissionalStatus) return '';
+    
+    const genero = profissionalStatus === 'Dra.' ? 'vinda' : 'vindo';
+    return `Bem-${genero}, ${profissionalStatus} ${profissionalNome}`;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
@@ -172,9 +182,9 @@ export default function Home() {
             </div>
 
             {isValidID && profissionalNome && (
-              <div className="text-center mb-4">
-                <p className="text-green-600 font-semibold text-lg">
-                  Bem-vinda, {profissionalNome}!
+              <div className="text-center mb-6 px-4">
+                <p className="text-green-600 font-bold text-2xl sm:text-3xl leading-tight">
+                  {getSaudacao()}
                 </p>
               </div>
             )}

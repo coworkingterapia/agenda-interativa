@@ -23,7 +23,7 @@ export default function Calendar({ onSelectDate }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [reservas, setReservas] = useState([]);
-  const [mensagemReserva, setMensagemReserva] = useState('');
+  const [reservasDiaAtual, setReservasDiaAtual] = useState([]);
   const [showWeekendMessage, setShowWeekendMessage] = useState(false);
 
   const hoje = new Date();
@@ -107,7 +107,7 @@ export default function Calendar({ onSelectDate }) {
     const novaMes = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
     if (novaMes >= doisMesesAtras) {
       setCurrentDate(novaMes);
-      setMensagemReserva('');
+      setReservasDiaAtual([]);
       setShowWeekendMessage(false);
     }
   };
@@ -116,7 +116,7 @@ export default function Calendar({ onSelectDate }) {
     const novaMes = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
     if (novaMes <= dozeSemanasFuture) {
       setCurrentDate(novaMes);
-      setMensagemReserva('');
+      setReservasDiaAtual([]);
       setShowWeekendMessage(false);
     }
   };
@@ -135,32 +135,53 @@ export default function Calendar({ onSelectDate }) {
     
     if (diaObj.hasReserva) {
       const reservasDia = getReservasParaDia(diaObj.dia);
-      const mensagens = reservasDia.map(r => `Sala ${r.sala}, ${r.horario}`).join(' | ');
-      setMensagemReserva(`Há reserva(s) neste dia! ${mensagens}`);
+      setReservasDiaAtual(reservasDia);
     } else {
-      setMensagemReserva('');
+      setReservasDiaAtual([]);
     }
     
     onSelectDate(dataCompleta);
+  };
+
+  const formatHorario = (horario) => {
+    const [hora] = horario.split(':');
+    return `${hora}h`;
   };
 
   const dias = getDiasDoMes();
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      {/* Área de mensagens */}
-      <div className="mb-6 min-h-20 bg-blue-50 rounded-xl p-4 border-2 border-blue-200">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-3 h-3 bg-white rounded-full border-2 border-slate-400" />
-          <p className="text-sm text-slate-600">Caso houver reserva avisaremos aqui</p>
-        </div>
-        {mensagemReserva && (
-          <p className="text-blue-700 font-semibold" data-testid="reserva-message">
-            {mensagemReserva}
-          </p>
+      {/* Mural de avisos */}
+      <div className="mb-6 min-h-32 bg-green-50 rounded-xl p-6 border-2 border-green-200">
+        {reservasDiaAtual.length > 0 ? (
+          <>
+            <h3 className="text-lg font-bold text-green-800 mb-4">
+              Há reserva(s) neste dia:
+            </h3>
+            <div className={`grid gap-3 ${
+              reservasDiaAtual.length > 2 
+                ? 'grid-cols-2' 
+                : 'grid-cols-1'
+            }`}>
+              {reservasDiaAtual.map((reserva, idx) => (
+                <div 
+                  key={idx}
+                  className="text-green-700 font-semibold text-base"
+                >
+                  Sala {reserva.sala} – {formatHorario(reserva.horario)}
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-white rounded-full border-2 border-slate-400" />
+            <p className="text-sm text-slate-600">Caso houver reserva avisaremos aqui</p>
+          </div>
         )}
         {showWeekendMessage && (
-          <p className="text-orange-600 font-semibold mt-2" data-testid="weekend-message">
+          <p className="text-orange-600 font-semibold mt-3" data-testid="weekend-message">
             Reveja as regras no contrato, cláusula 5
           </p>
         )}

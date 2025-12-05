@@ -10,6 +10,8 @@ const API = `${BACKEND_URL}/api`;
 
 const IMAGE_MULHER_CHA = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/z5lvtsj6_mulher%20trabalha%20com%20ch%C3%A1.png";
 
+const VALOR_BASE_RESERVA = 30.00;
+
 const ACRESCIMOS = [
   { id: 'sem', label: 'Sem acréscimo', minutos: 0, valor: 0 },
   { id: '15min', label: '+15 minutos = R$ 8,00', minutos: 15, valor: 8.00 },
@@ -24,7 +26,7 @@ const horarioParaMinutos = (horario) => {
 export default function Acrescimo() {
   const navigate = useNavigate();
   const [acrescimoSelecionado, setAcrescimoSelecionado] = useState('sem');
-  const [valorAcumulado, setValorAcumulado] = useState(0);
+  const [valorAcumulado, setValorAcumulado] = useState(VALOR_BASE_RESERVA);
   const [dataSelecionada, setDataSelecionada] = useState(null);
   const [horarioSelecionado, setHorarioSelecionado] = useState(null);
   const [reservas, setReservas] = useState([]);
@@ -56,6 +58,8 @@ export default function Acrescimo() {
     const date = new Date(selectedDateStr);
     setDataSelecionada(date);
     setHorarioSelecionado(horario);
+    
+    sessionStorage.setItem('valorBase', VALOR_BASE_RESERVA.toString());
     
     carregarReservas(date);
   }, [navigate]);
@@ -107,10 +111,7 @@ export default function Acrescimo() {
     }
 
     setAcrescimoSelecionado(acrescimoId);
-    
-    const valorBaseStr = sessionStorage.getItem('valorBase') || '0';
-    const valorBase = parseFloat(valorBaseStr);
-    const novoValorAcumulado = valorBase + acrescimo.valor;
+    const novoValorAcumulado = VALOR_BASE_RESERVA + acrescimo.valor;
     setValorAcumulado(novoValorAcumulado);
   };
 
@@ -231,10 +232,10 @@ export default function Acrescimo() {
             </div>
             <div className="flex-1 p-8 text-center sm:text-left">
               <p className="text-2xl sm:text-3xl font-bold text-slate-800 leading-relaxed">
-                Conforto e ambiente clean!<br />
-                No Coworking Terapia<br />
-                você conta com wi-fi,<br />
-                chá, café e água!
+                Conforto!<br />
+                No Coworking Terapia você<br />
+                conta com wi-fi, chá, café<br />
+                e água.
               </p>
             </div>
           </div>

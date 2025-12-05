@@ -128,25 +128,13 @@ async def get_reservas_por_data(data: str):
 
 @api_router.post("/seed-reservas")
 async def seed_reservas():
-    from datetime import timedelta
-    
-    hoje = datetime.now(timezone.utc)
-    reservas = [
-        {"data": hoje.strftime("%Y-%m-%d"), "sala": "01", "horario": "14:00", "duracao_minutos": 60},
-        {"data": hoje.strftime("%Y-%m-%d"), "sala": "02", "horario": "16:00", "duracao_minutos": 75},
-        {"data": (hoje + timedelta(days=3)).strftime("%Y-%m-%d"), "sala": "03", "horario": "10:00", "duracao_minutos": 60},
-        {"data": (hoje + timedelta(days=7)).strftime("%Y-%m-%d"), "sala": "01", "horario": "15:00", "duracao_minutos": 90},
-        {"data": (hoje + timedelta(days=14)).strftime("%Y-%m-%d"), "sala": "02", "horario": "11:00", "duracao_minutos": 60},
-        {"data": (hoje + timedelta(days=21)).strftime("%Y-%m-%d"), "sala": "04", "horario": "09:00", "duracao_minutos": 60},
-    ]
-    
     await db.reservas.delete_many({})
-    
-    for reserva_data in reservas:
-        reserva_obj = Reserva(**reserva_data)
-        await db.reservas.insert_one(reserva_obj.model_dump())
-    
-    return {"message": f"{len(reservas)} reservas inseridas com sucesso"}
+    return {"message": "Reservas de teste removidas com sucesso"}
+
+@api_router.delete("/reservas")
+async def delete_all_reservas():
+    result = await db.reservas.delete_many({})
+    return {"message": f"{result.deleted_count} reservas removidas"}
 
 
 app.include_router(api_router)

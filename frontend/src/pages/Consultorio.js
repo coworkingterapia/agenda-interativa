@@ -127,12 +127,24 @@ export default function Consultorio() {
         </div>
 
         {/* Banner informativo */}
-        <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
-          <p className="text-2xl sm:text-3xl font-bold text-slate-800 leading-relaxed">
-            No Coworking Terapia<br />
-            as salas são climatizadas<br />
-            e organizadas.
-          </p>
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="flex flex-col sm:flex-row items-center">
+            <div className="w-full sm:w-1/2">
+              <img 
+                src={IMAGE_VENTIL}
+                alt="Ventilação"
+                className="w-full h-full object-cover"
+                style={{ maxHeight: '300px' }}
+              />
+            </div>
+            <div className="flex-1 p-8 text-center sm:text-left">
+              <p className="text-2xl sm:text-3xl font-bold text-slate-800 leading-relaxed">
+                No Coworking Terapia<br />
+                as salas são climatizadas<br />
+                e organizadas.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

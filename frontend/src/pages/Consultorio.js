@@ -150,7 +150,7 @@ export default function Consultorio() {
             <>
               <div className="relative">
                 <img
-                  src={salaSelecionada.imagem}
+                  src={salaSelecionada.imagemCompleta}
                   alt={salaSelecionada.nome}
                   className="w-full rounded-lg"
                 />

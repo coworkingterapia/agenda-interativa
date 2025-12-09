@@ -1,0 +1,194 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+
+const IMAGE_SALA_01 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/kltv41ss_FOTO%20SALA%201.png";
+const IMAGE_SALA_02 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/65lu9d2c_FOTO%20SALA%202.png";
+const IMAGE_SALA_03 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/hzsj6eeq_FOTO%20SALA%203.png";
+const IMAGE_SALA_04 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/kltv41ss_FOTO%20SALA%201.png";
+
+const SALAS = [
+  { id: '01', nome: 'Sala 01', imagem: IMAGE_SALA_01, descricao: '' },
+  { id: '02', nome: 'Sala 02', imagem: IMAGE_SALA_02, descricao: '' },
+  { id: '03', nome: 'Sala 03', imagem: IMAGE_SALA_03, descricao: '(com maca)' },
+  { id: '04', nome: 'Sala 04', imagem: IMAGE_SALA_04, descricao: '' }
+];
+
+export default function Consultorio() {
+  const navigate = useNavigate();
+  const [salaSelecionada, setSalaSelecionada] = useState(null);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [showImagePopup, setShowImagePopup] = useState(false);
+
+  useEffect(() => {
+    const profissionalNome = sessionStorage.getItem('profissionalNome');
+    const selectedDate = sessionStorage.getItem('selectedDate');
+    const horario = sessionStorage.getItem('horarioSelecionado');
+    const acrescimo = sessionStorage.getItem('acrescimoMinutos');
+    
+    if (!profissionalNome || !selectedDate || !horario || !acrescimo) {
+      navigate('/');
+      return;
+    }
+  }, [navigate]);
+
+  const handleSalaClick = (sala) => {
+    setSalaSelecionada(sala);
+    setShowImagePopup(true);
+  };
+
+  const handleReservar = () => {
+    setShowImagePopup(false);
+    setShowConfirmPopup(true);
+  };
+
+  const handleConfirmar = () => {
+    sessionStorage.setItem('salaSelecionada', salaSelecionada.id);
+    setShowConfirmPopup(false);
+    console.log('Sala confirmada:', salaSelecionada.id);
+  };
+
+  const handleCancelar = () => {
+    setShowConfirmPopup(false);
+    setSalaSelecionada(null);
+  };
+
+  const handleCloseImage = () => {
+    setShowImagePopup(false);
+    setSalaSelecionada(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Header */}
+        <div className="flex justify-end mb-8">
+          <button 
+            className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+            data-testid="menu-hamburger"
+          >
+            <Menu className="w-8 h-8 text-slate-700" />
+          </button>
+        </div>
+
+        {/* Título */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-slate-900 mb-4 tracking-tight">
+            AGENDA INTERATIVA
+          </h1>
+          <p className="text-xl sm:text-2xl text-slate-600 font-light">
+            Fácil e intuitiva
+          </p>
+        </div>
+
+        {/* Título da seção */}
+        <h2 className="text-4xl font-bold text-center text-slate-800 mb-10">
+          Escolha o consultório
+        </h2>
+
+        {/* Grid de salas 2x2 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
+          {SALAS.map((sala) => (
+            <button
+              key={sala.id}
+              onClick={() => handleSalaClick(sala)}
+              className="relative bg-white rounded-3xl shadow-xl overflow-hidden hover:scale-105 transition-transform cursor-pointer group"
+              data-testid={`sala-${sala.id}`}
+            >
+              <div className="aspect-[4/3] relative">
+                <img
+                  src={sala.imagem}
+                  alt={sala.nome}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-3xl font-bold text-white mb-1">
+                    {sala.id}
+                  </h3>
+                  {sala.descricao && (
+                    <p className="text-lg text-white/90">
+                      {sala.descricao}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Banner informativo */}
+        <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
+          <p className="text-2xl sm:text-3xl font-bold text-slate-800 leading-relaxed">
+            No Coworking Terapia<br />
+            as salas são climatizadas<br />
+            e organizadas.
+          </p>
+        </div>
+      </div>
+
+      {/* Popup com imagem ampliada */}
+      <AlertDialog open={showImagePopup} onOpenChange={setShowImagePopup}>
+        <AlertDialogContent className="max-w-4xl" data-testid="image-popup">
+          <button
+            onClick={handleCloseImage}
+            className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-white transition-colors"
+            data-testid="close-image-button"
+          >
+            <X className="w-6 h-6 text-slate-700" />
+          </button>
+          {salaSelecionada && (
+            <>
+              <div className="relative">
+                <img
+                  src={salaSelecionada.imagem}
+                  alt={salaSelecionada.nome}
+                  className="w-full rounded-lg"
+                />
+              </div>
+              <div className="pt-4">
+                <Button
+                  onClick={handleReservar}
+                  className="w-full py-6 text-xl font-bold"
+                  style={{ backgroundColor: '#6169F2' }}
+                  data-testid="button-reservar-consultorio"
+                >
+                  Reservar este consultório
+                </Button>
+              </div>
+            </>
+          )}
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Popup de confirmação */}
+      <AlertDialog open={showConfirmPopup} onOpenChange={setShowConfirmPopup}>
+        <AlertDialogContent data-testid="confirm-popup">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmação de consultório</AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
+              Você escolheu a Sala {salaSelecionada?.id}. Confirmar?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={handleCancelar}
+              data-testid="button-cancelar"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleConfirmar}
+              data-testid="button-confirmar"
+            >
+              Confirmar
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}

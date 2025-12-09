@@ -134,7 +134,7 @@ export default function Acrescimo() {
     sessionStorage.setItem('valorAcrescimo', acrescimo.valor.toString());
     sessionStorage.setItem('valorAcumulado', valorAcumulado.toString());
     
-    console.log('Acréscimo confirmado:', acrescimo);
+    navigate('/consultorio');
   };
 
   if (!dataSelecionada || !horarioSelecionado) {

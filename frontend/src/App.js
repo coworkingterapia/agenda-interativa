@@ -7,6 +7,7 @@ import Acrescimo from "@/pages/Acrescimo";
 import Consultorio from "@/pages/Consultorio";
 import Recorrencia from "@/pages/Recorrencia";
 import Pagamento from "@/pages/Pagamento";
+import Resumo from "@/pages/Resumo";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/consultorio" element={<Consultorio />} />
           <Route path="/recorrencia" element={<Recorrencia />} />
           <Route path="/pagamento" element={<Pagamento />} />
+          <Route path="/resumo" element={<Resumo />} />
         </Routes>
       </BrowserRouter>
     </div>

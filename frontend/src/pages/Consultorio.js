@@ -106,7 +106,7 @@ export default function Consultorio() {
             >
               <div className="aspect-[4/3] relative">
                 <img
-                  src={sala.imagem}
+                  src={sala.miniatura}
                   alt={sala.nome}
                   className="w-full h-full object-cover"
                 />

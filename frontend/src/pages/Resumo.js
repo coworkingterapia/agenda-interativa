@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from \"@/components/ui/alert-dialog\";\nimport axios from 'axios';\n\nconst BACKEND_URL = process.env.REACT_APP_BACKEND_URL;\nconst API = `${BACKEND_URL}/api`;\n\nconst IMAGE_MULHER_CELULAR = \"https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/w74pg0wp_mulher%20no%20celular.png\";\n\nexport default function Resumo() {\n  const navigate = useNavigate();\n  const [dadosResumo, setDadosResumo] = useState(null);\n  const [showReiniciarPopup, setShowReiniciarPopup] = useState(false);
+
+export default function Resumo() {
+  const navigate = useNavigate();
+  const [dadosResumo, setDadosResumo] = useState(null);
 
   useEffect(() => {
     const profissionalNome = sessionStorage.getItem('profissionalNome');

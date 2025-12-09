@@ -26,7 +26,6 @@ const SALAS = [
 export default function Consultorio() {
   const navigate = useNavigate();
   const [salaSelecionada, setSalaSelecionada] = useState(null);
-  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [showImagePopup, setShowImagePopup] = useState(false);
 
   useEffect(() => {
@@ -47,22 +46,12 @@ export default function Consultorio() {
   };
 
   const handleReservar = () => {
-    setShowImagePopup(false);
-    setShowConfirmPopup(true);
-  };
-
-  const handleConfirmar = () => {
     sessionStorage.setItem('salaSelecionada', salaSelecionada.id);
-    setShowConfirmPopup(false);
+    setShowImagePopup(false);
     console.log('Sala confirmada:', salaSelecionada.id);
   };
 
-  const handleCancelar = () => {
-    setShowConfirmPopup(false);
-    setSalaSelecionada(null);
-  };
-
-  const handleCloseImage = () => {
+  const handleFechar = () => {
     setShowImagePopup(false);
     setSalaSelecionada(null);
   };

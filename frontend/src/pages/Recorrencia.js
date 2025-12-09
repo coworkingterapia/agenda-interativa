@@ -97,7 +97,16 @@ export default function Recorrencia() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex justify-end mb-8">
+        <div className="flex justify-between mb-8">
+          <button 
+            onClick={() => navigate('/consultorio')}
+            className="p-2 hover:bg-white/50 rounded-lg transition-colors"
+            data-testid="button-voltar"
+          >
+            <svg className="w-8 h-8 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
           <button 
             className="p-2 hover:bg-white/50 rounded-lg transition-colors"
             data-testid="menu-hamburger"

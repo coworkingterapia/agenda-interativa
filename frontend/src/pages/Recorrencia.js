@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Menu, Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const VALOR_BASE = 30.00;
+
 export default function Recorrencia() {
   const navigate = useNavigate();
   const [semanas, setSemanas] = useState(0);
-  const [valorTotal] = useState(0);
+  const [valorTotal, setValorTotal] = useState(VALOR_BASE);
+  const [valorUnitario, setValorUnitario] = useState(VALOR_BASE);
 
   useEffect(() => {
     const profissionalNome = sessionStorage.getItem('profissionalNome');
@@ -18,7 +21,26 @@ export default function Recorrencia() {
       navigate('/');
       return;
     }
+
+    const acrescimoMinutos = parseInt(sessionStorage.getItem('acrescimoMinutos') || '0');
+    let valorAcrescimo = 0;
+    
+    if (acrescimoMinutos === 15) {
+      valorAcrescimo = 8.00;
+    } else if (acrescimoMinutos === 30) {
+      valorAcrescimo = 15.00;
+    }
+    
+    const valorUnit = VALOR_BASE + valorAcrescimo;
+    setValorUnitario(valorUnit);
+    setValorTotal(valorUnit);
   }, [navigate]);
+
+  useEffect(() => {
+    const totalAgendamentos = 1 + semanas;
+    const novoValorTotal = valorUnitario * totalAgendamentos;
+    setValorTotal(novoValorTotal);
+  }, [semanas, valorUnitario]);
 
   const handleIncrement = () => {
     if (semanas < 12) {
@@ -32,15 +54,51 @@ export default function Recorrencia() {
     }
   };
 
+  const calcularDatasRecorrentes = () => {
+    const dataInicial = new Date(sessionStorage.getItem('selectedDate'));
+    const datas = [dataInicial.toISOString().split('T')[0]];
+    
+    for (let i = 1; i <= semanas; i++) {
+      const novaData = new Date(dataInicial);
+      novaData.setDate(novaData.getDate() + (i * 7));
+      datas.push(novaData.toISOString().split('T')[0]);
+    }
+    
+    return datas;
+  };
+
   const handleSeguir = () => {
+    const datasRecorrentes = calcularDatasRecorrentes();
+    
     sessionStorage.setItem('semanasRecorrentes', semanas.toString());
-    console.log('Recorrência confirmada:', semanas, 'semanas');
+    sessionStorage.setItem('valorTotalFinal', valorTotal.toString());
+    sessionStorage.setItem('datasRecorrentes', JSON.stringify(datasRecorrentes));
+    sessionStorage.setItem('totalAgendamentos', (1 + semanas).toString());
+    
+    console.log('Recorrência confirmada:', {
+      semanas,
+      valorTotal,
+      totalAgendamentos: 1 + semanas,
+      datas: datasRecorrentes
+    });
   };
 
   const handleNaoRepetir = () => {
-    setSemanas(0);
+    const dataInicial = new Date(sessionStorage.getItem('selectedDate'));
+    const datasRecorrentes = [dataInicial.toISOString().split('T')[0]];
+    
     sessionStorage.setItem('semanasRecorrentes', '0');
-    console.log('Sem recorrência');
+    sessionStorage.setItem('valorTotalFinal', valorUnitario.toString());
+    sessionStorage.setItem('datasRecorrentes', JSON.stringify(datasRecorrentes));
+    sessionStorage.setItem('totalAgendamentos', '1');
+    
+    setSemanas(0);
+    setValorTotal(valorUnitario);
+    
+    console.log('Sem recorrência:', {
+      valorTotal: valorUnitario,
+      totalAgendamentos: 1
+    });
   };
 
   return (

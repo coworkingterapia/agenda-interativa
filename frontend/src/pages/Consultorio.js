@@ -4,16 +4,23 @@ import { Menu, X } from 'lucide-react';
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
-const IMAGE_SALA_01 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/kltv41ss_FOTO%20SALA%201.png";
-const IMAGE_SALA_02 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/65lu9d2c_FOTO%20SALA%202.png";
-const IMAGE_SALA_03 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/hzsj6eeq_FOTO%20SALA%203.png";
-const IMAGE_SALA_04 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/kltv41ss_FOTO%20SALA%201.png";
+const IMAGE_MINIATURA_01 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/n1vmr6bl_Miniatura%20sala%2001.png";
+const IMAGE_MINIATURA_02 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/nxlo7hz5_Miniatura%20sala%2002.png";
+const IMAGE_MINIATURA_03 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/icpguuhy_Miniatura%20sala%2003.png";
+const IMAGE_MINIATURA_04 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/t9u64v6p_Miniatura%20sala%2004.png";
+
+const IMAGE_COMPLETA_01 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/shpv8i1c_FOTO%20SALA%201.2.png";
+const IMAGE_COMPLETA_02 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/vtzv8vqn_FOTO%20SALA%202.2.png";
+const IMAGE_COMPLETA_03 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/498uiz6h_FOTO%20SALA%203.2.png";
+const IMAGE_COMPLETA_04 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/t9u64v6p_Miniatura%20sala%2004.png";
+
+const IMAGE_VENTIL = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/86c3a2u9_FOTO%20VENTIL%20TETO.png";
 
 const SALAS = [
-  { id: '01', nome: 'Sala 01', imagem: IMAGE_SALA_01, descricao: '' },
-  { id: '02', nome: 'Sala 02', imagem: IMAGE_SALA_02, descricao: '' },
-  { id: '03', nome: 'Sala 03', imagem: IMAGE_SALA_03, descricao: '(com maca)' },
-  { id: '04', nome: 'Sala 04', imagem: IMAGE_SALA_04, descricao: '' }
+  { id: '01', nome: 'Sala 01', miniatura: IMAGE_MINIATURA_01, imagemCompleta: IMAGE_COMPLETA_01, descricao: '' },
+  { id: '02', nome: 'Sala 02', miniatura: IMAGE_MINIATURA_02, imagemCompleta: IMAGE_COMPLETA_02, descricao: '' },
+  { id: '03', nome: 'Sala 03', miniatura: IMAGE_MINIATURA_03, imagemCompleta: IMAGE_COMPLETA_03, descricao: '(com maca)' },
+  { id: '04', nome: 'Sala 04', miniatura: IMAGE_MINIATURA_04, imagemCompleta: IMAGE_COMPLETA_04, descricao: '' }
 ];
 
 export default function Consultorio() {

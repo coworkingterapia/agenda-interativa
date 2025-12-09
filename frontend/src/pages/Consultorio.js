@@ -137,64 +137,38 @@ export default function Consultorio() {
         </div>
       </div>
 
-      {/* Popup com imagem ampliada */}
+      {/* Modal de visualização ampliada */}
       <AlertDialog open={showImagePopup} onOpenChange={setShowImagePopup}>
         <AlertDialogContent className="max-w-4xl" data-testid="image-popup">
-          <button
-            onClick={handleCloseImage}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-white transition-colors"
-            data-testid="close-image-button"
-          >
-            <X className="w-6 h-6 text-slate-700" />
-          </button>
           {salaSelecionada && (
             <>
-              <div className="relative">
+              <div className="relative mb-6">
                 <img
                   src={salaSelecionada.imagemCompleta}
                   alt={salaSelecionada.nome}
                   className="w-full rounded-lg"
                 />
               </div>
-              <div className="pt-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   onClick={handleReservar}
-                  className="w-full py-6 text-xl font-bold"
+                  className="flex-1 py-6 text-xl font-bold"
                   style={{ backgroundColor: '#6169F2' }}
                   data-testid="button-reservar-consultorio"
                 >
-                  Reservar este consultório
+                  Reservar
+                </Button>
+                <Button
+                  onClick={handleFechar}
+                  variant="outline"
+                  className="flex-1 py-6 text-xl font-bold"
+                  data-testid="button-fechar-modal"
+                >
+                  Fechar
                 </Button>
               </div>
             </>
           )}
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Popup de confirmação */}
-      <AlertDialog open={showConfirmPopup} onOpenChange={setShowConfirmPopup}>
-        <AlertDialogContent data-testid="confirm-popup">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmação de consultório</AlertDialogTitle>
-            <AlertDialogDescription className="text-base">
-              Você escolheu a Sala {salaSelecionada?.id}. Confirmar?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
-            <Button 
-              variant="outline" 
-              onClick={handleCancelar}
-              data-testid="button-cancelar"
-            >
-              Cancelar
-            </Button>
-            <Button 
-              onClick={handleConfirmar}
-              data-testid="button-confirmar"
-            >
-              Confirmar
-            </Button>
-          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>

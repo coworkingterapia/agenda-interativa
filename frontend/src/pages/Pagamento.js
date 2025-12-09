@@ -6,11 +6,40 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, A
 
 const AUDIO_URL = "https://audio.jukehost.co.uk/FKRO4oNrvRIwHmfpx32hFkqDTODF7Inc";
 
+const LINKS_PAGAMENTO = {
+  pre: {
+    0: {
+      0: "https://mpago.la/2UNmgLb",
+      15: "https://mpago.la/2AdQC8h",
+      30: "https://mpago.la/21b6Gcw"
+    },
+    1: "https://mpago.la/1EoCMLW",
+    2: "https://mpago.la/1wQGvg4",
+    3: "https://mpago.la/1JGcviH",
+    4: "https://mpago.la/24v7ebk",
+    5: "https://mpago.la/1LZdUQz",
+    6: "https://mpago.la/2RCyGdh",
+    7: "https://mpago.la/1KP9wSN",
+    8: "https://mpago.la/1LSc7DP",
+    9: "https://mpago.la/319rxt5",
+    10: "https://mpago.la/2HBrxKk"
+  },
+  pos: {
+    0: {
+      0: "https://mpago.la/26dfm2M",
+      15: "https://mpago.la/2v5KN1s",
+      30: "https://mpago.la/1AtThz8"
+    }
+  }
+};
+
 export default function Pagamento() {
   const navigate = useNavigate();
   const [formaPagamento, setFormaPagamento] = useState('antecipado');
-  const [valorFinal] = useState(0);
+  const [valorFinal, setValorFinal] = useState(0);
   const [showAudioPopup, setShowAudioPopup] = useState(false);
+  const [valorTotalRecorrencia, setValorTotalRecorrencia] = useState(0);
+  const [totalAgendamentos, setTotalAgendamentos] = useState(1);
 
   useEffect(() => {
     const profissionalNome = sessionStorage.getItem('profissionalNome');
@@ -22,15 +51,60 @@ export default function Pagamento() {
       navigate('/');
       return;
     }
+
+    const valorTotal = parseFloat(sessionStorage.getItem('valorTotalFinal') || '30');
+    const agendamentos = parseInt(sessionStorage.getItem('totalAgendamentos') || '1');
+    
+    setValorTotalRecorrencia(valorTotal);
+    setTotalAgendamentos(agendamentos);
+    
+    calcularValorFinal(formaPagamento, valorTotal, agendamentos);
   }, [navigate]);
+
+  const calcularValorFinal = (forma, valorBase, numAgendamentos) => {
+    let valorCalculado = valorBase;
+    
+    if (forma === 'no-dia') {
+      valorCalculado = valorBase + (10.00 * numAgendamentos);
+    }
+    
+    setValorFinal(valorCalculado);
+  };
 
   const handleFormaPagamentoChange = (forma) => {
     setFormaPagamento(forma);
+    calcularValorFinal(forma, valorTotalRecorrencia, totalAgendamentos);
+  };
+
+  const obterLinkPagamento = () => {
+    const acrescimoMinutos = parseInt(sessionStorage.getItem('acrescimoMinutos') || '0');
+    const semanasRecorrentes = parseInt(sessionStorage.getItem('semanasRecorrentes') || '0');
+    const tipoPagamento = formaPagamento === 'antecipado' ? 'pre' : 'pos';
+    
+    if (semanasRecorrentes === 0) {
+      return LINKS_PAGAMENTO[tipoPagamento][0][acrescimoMinutos] || LINKS_PAGAMENTO[tipoPagamento][0][0];
+    } else {
+      if (tipoPagamento === 'pre' && LINKS_PAGAMENTO.pre[semanasRecorrentes]) {
+        return LINKS_PAGAMENTO.pre[semanasRecorrentes];
+      }
+    }
+    
+    return null;
   };
 
   const handleVerResumo = () => {
+    const linkPagamento = obterLinkPagamento();
+    
     sessionStorage.setItem('formaPagamento', formaPagamento);
-    console.log('Forma de pagamento selecionada:', formaPagamento);
+    sessionStorage.setItem('valorFinalComPagamento', valorFinal.toString());
+    sessionStorage.setItem('linkPagamento', linkPagamento || '');
+    
+    console.log('Dados do pagamento:', {
+      formaPagamento,
+      valorFinal,
+      linkPagamento,
+      totalAgendamentos
+    });
   };
 
   const handleOpenAudioPopup = () => {

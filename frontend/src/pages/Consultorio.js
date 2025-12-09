@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Menu } from 'lucide-react';
+import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
 const IMAGE_MINIATURA_01 = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/n1vmr6bl_Miniatura%20sala%2001.png";
@@ -48,7 +48,7 @@ export default function Consultorio() {
   const handleReservar = () => {
     sessionStorage.setItem('salaSelecionada', salaSelecionada.id);
     setShowImagePopup(false);
-    console.log('Sala confirmada:', salaSelecionada.id);
+    navigate('/recorrencia');
   };
 
   const handleFechar = () => {

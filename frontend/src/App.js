@@ -5,6 +5,7 @@ import Calendario from "@/pages/Calendario";
 import Horarios from "@/pages/Horarios";
 import Acrescimo from "@/pages/Acrescimo";
 import Consultorio from "@/pages/Consultorio";
+import Recorrencia from "@/pages/Recorrencia";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/horarios" element={<Horarios />} />
           <Route path="/acrescimo" element={<Acrescimo />} />
           <Route path="/consultorio" element={<Consultorio />} />
+          <Route path="/recorrencia" element={<Recorrencia />} />
         </Routes>
       </BrowserRouter>
     </div>

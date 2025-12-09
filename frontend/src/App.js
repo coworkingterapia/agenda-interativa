@@ -6,6 +6,7 @@ import Horarios from "@/pages/Horarios";
 import Acrescimo from "@/pages/Acrescimo";
 import Consultorio from "@/pages/Consultorio";
 import Recorrencia from "@/pages/Recorrencia";
+import Pagamento from "@/pages/Pagamento";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/acrescimo" element={<Acrescimo />} />
           <Route path="/consultorio" element={<Consultorio />} />
           <Route path="/recorrencia" element={<Recorrencia />} />
+          <Route path="/pagamento" element={<Pagamento />} />
         </Routes>
       </BrowserRouter>
     </div>

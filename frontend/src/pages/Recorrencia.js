@@ -75,12 +75,7 @@ export default function Recorrencia() {
     sessionStorage.setItem('datasRecorrentes', JSON.stringify(datasRecorrentes));
     sessionStorage.setItem('totalAgendamentos', (1 + semanas).toString());
     
-    console.log('Recorrência confirmada:', {
-      semanas,
-      valorTotal,
-      totalAgendamentos: 1 + semanas,
-      datas: datasRecorrentes
-    });
+    navigate('/pagamento');
   };
 
   const handleNaoRepetir = () => {
@@ -95,10 +90,7 @@ export default function Recorrencia() {
     setSemanas(0);
     setValorTotal(valorUnitario);
     
-    console.log('Sem recorrência:', {
-      valorTotal: valorUnitario,
-      totalAgendamentos: 1
-    });
+    navigate('/pagamento');
   };
 
   return (

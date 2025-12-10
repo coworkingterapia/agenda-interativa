@@ -53,6 +53,7 @@ class Reserva(BaseModel):
     valor_unitario: Optional[float] = 30.0
     forma_pagamento: Optional[str] = None
     status: Optional[str] = "Pendente"
+    google_event_id: Optional[str] = None
 
 class ReservaCreate(BaseModel):
     data: str
@@ -67,6 +68,7 @@ class ReservaCreate(BaseModel):
     valor_unitario: Optional[float] = 30.0
     forma_pagamento: Optional[str] = None
     status: Optional[str] = "Pendente"
+    google_event_id: Optional[str] = None
 
 class ReservasCreateRequest(BaseModel):
     reservas: List[ReservaCreate]

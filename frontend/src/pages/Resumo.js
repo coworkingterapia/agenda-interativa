@@ -385,7 +385,110 @@ Link de pagamento: ${linkPagamento || 'A ser fornecido'}`;
             </div>
           </div>
         </div>
+
+        {/* Texto de Aviso */}
+        <p className="text-center text-sm text-slate-500 mb-6">
+          A reserva só terá validade após confirmação do pagamento pelo WhatsApp
+        </p>
+
+        {/* Botões de Ação */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <Button
+            onClick={handleOkReservar}
+            className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg transition-all"
+          >
+            Ok, reservar
+          </Button>
+          <Button
+            onClick={handleReiniciar}
+            className="bg-slate-400 hover:bg-slate-500 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg transition-all"
+          >
+            Reiniciar
+          </Button>
+        </div>
+
+        {/* Banner Inferior */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl shadow-xl p-8 mb-8">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="w-full md:w-1/2">
+              <img 
+                src={IMAGE_MULHER_CELULAR}
+                alt="Mulher no celular"
+                className="w-full h-auto rounded-2xl shadow-md"
+              />
+            </div>
+            <div className="w-full md:w-1/2 text-center md:text-left">
+              <h3 className="text-3xl sm:text-4xl font-bold text-slate-800 mb-2">
+                Agende tudo pelo aplicativo
+              </h3>
+              <p className="text-xl sm:text-2xl text-slate-600 font-light">
+                com liberdade
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Popup de Orientação */}
+      <AlertDialog open={showOrientacaoPopup} onOpenChange={setShowOrientacaoPopup}>
+        <AlertDialogContent className="max-w-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold text-slate-800">
+              Confirmação de Agendamento
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base text-slate-600 space-y-4 pt-4">
+              <p>
+                Agradecemos por agendar seus atendimentos conosco! Assim que você clicar em <strong>[Enviar]</strong>, este aplicativo irá direcionar para o WhatsApp, a fim de concluir sua reserva e dispor do link de pagamento.
+              </p>
+              <p>
+                Não altere a mensagem, apenas confira e envie-nos em seguida. Se precisar acrescentar ou comentar algo, faça isso após enviar este Resumo de Agendamento.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-3">
+            <Button
+              onClick={() => setShowOrientacaoPopup(false)}
+              className="bg-slate-300 hover:bg-slate-400 text-slate-700"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleEnviarWhatsApp}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              Enviar
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Popup de Reiniciar */}
+      <AlertDialog open={showReiniciarPopup} onOpenChange={setShowReiniciarPopup}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl font-bold text-slate-800">
+              Tem certeza que deseja reiniciar?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base text-slate-600 pt-2">
+              Todos os dados serão perdidos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-3">
+            <Button
+              onClick={() => setShowReiniciarPopup(false)}
+              className="bg-slate-300 hover:bg-slate-400 text-slate-700"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirmarReiniciar}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Sim, reiniciar
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,10 +1,45 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+const IMAGE_MULHER_CELULAR = "https://customer-assets.emergentagent.com/job_id-validator-5/artifacts/w74pg0wp_mulher%20no%20celular.png";
+
+const LINKS_PAGAMENTO = {
+  pre: {
+    0: {
+      0: "https://mpago.la/2UNmgLb",
+      15: "https://mpago.la/2AdQC8h",
+      30: "https://mpago.la/21b6Gcw"
+    },
+    1: "https://mpago.la/1EoCMLW",
+    2: "https://mpago.la/1wQGvg4",
+    3: "https://mpago.la/1JGcviH",
+    4: "https://mpago.la/24v7ebk",
+    5: "https://mpago.la/1LZdUQz",
+    6: "https://mpago.la/2RCyGdh",
+    7: "https://mpago.la/1KP9wSN",
+    8: "https://mpago.la/1LSc7DP",
+    9: "https://mpago.la/319rxt5",
+    10: "https://mpago.la/2HBrxKk"
+  },
+  pos: {
+    0: {
+      0: "https://mpago.la/26dfm2M",
+      15: "https://mpago.la/2v5KN1s",
+      30: "https://mpago.la/1AtThz8"
+    }
+  }
+};
 
 export default function Resumo() {
   const navigate = useNavigate();
   const [dadosResumo, setDadosResumo] = useState(null);
+  const [showOrientacaoPopup, setShowOrientacaoPopup] = useState(false);
+  const [showReiniciarPopup, setShowReiniciarPopup] = useState(false);
 
   useEffect(() => {
     const profissionalNome = sessionStorage.getItem('profissionalNome');

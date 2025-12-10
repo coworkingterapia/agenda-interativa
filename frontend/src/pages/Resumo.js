@@ -169,12 +169,14 @@ export default function Resumo() {
     try {
       const horarioFinal = calcularHorarioFinal();
       const reservas = dadosResumo.datasRecorrentes.map(dataStr => ({
+        data: dataStr,
+        sala: dadosResumo.sala,
+        horario: dadosResumo.horario,
+        duracao_minutos: 60 + dadosResumo.acrescimoMinutos,
         id_profissional: dadosResumo.idProfissional,
         nome_profissional: `${dadosResumo.profissionalStatus} ${dadosResumo.profissionalNome}`,
-        data: dataStr,
         horario_inicio: dadosResumo.horario,
         horario_fim: horarioFinal,
-        sala: dadosResumo.sala,
         acrescimo_minutos: dadosResumo.acrescimoMinutos,
         valor_unitario: dadosResumo.valorUnitario,
         forma_pagamento: dadosResumo.formaPagamento,
@@ -190,7 +192,8 @@ export default function Resumo() {
       });
 
       if (!response.ok) {
-        console.error('Erro ao salvar reservas:', await response.text());
+        const errorText = await response.text();
+        console.error('Erro ao salvar reservas:', errorText);
       }
     } catch (error) {
       console.error('Erro ao salvar reservas:', error);

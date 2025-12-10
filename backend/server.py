@@ -132,13 +132,20 @@ async def get_reservas(mes: Optional[str] = None, ano: Optional[str] = None):
     reservas = await db.reservas.find(query, {"_id": 0}).to_list(1000)
     return reservas
 
-@api_router.post("/reservas", response_model=Reserva)
-async def create_reserva(reserva: ReservaCreate):
-    reserva_obj = Reserva(**reserva.model_dump())
-    doc = reserva_obj.model_dump()
+@api_router.post("/reservas")
+async def create_reservas(request: ReservasCreateRequest):
+    reservas_criadas = []
     
-    await db.reservas.insert_one(doc)
-    return reserva_obj
+    for reserva_data in request.reservas:
+        reserva_obj = Reserva(**reserva_data.model_dump())
+        doc = reserva_obj.model_dump()
+        await db.reservas.insert_one(doc)
+        reservas_criadas.append(reserva_obj)
+    
+    return {
+        "message": f"{len(reservas_criadas)} reserva(s) criada(s) com sucesso",
+        "count": len(reservas_criadas)
+    }
 
 @api_router.get("/reservas-por-data")
 async def get_reservas_por_data(data: str):

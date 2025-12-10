@@ -170,6 +170,166 @@ async def delete_all_reservas():
     return {"message": f"{result.deleted_count} reservas removidas"}
 
 
+@api_router.get("/google/auth/login")
+async def google_login(email: str):
+    client_id = os.environ.get('GOOGLE_CLIENT_ID')
+    redirect_uri = os.environ.get('GOOGLE_REDIRECT_URI')
+    
+    if not client_id or not redirect_uri:
+        raise HTTPException(status_code=500, detail="Google credentials not configured")
+    
+    auth_url = (
+        f"https://accounts.google.com/o/oauth2/auth?"
+        f"client_id={client_id}&"
+        f"redirect_uri={redirect_uri}&"
+        f"response_type=code&"
+        f"scope=https://www.googleapis.com/auth/calendar&"
+        f"access_type=offline&"
+        f"prompt=consent&"
+        f"state={email}"
+    )
+    
+    return {"authorization_url": auth_url}
+
+
+@api_router.get("/google/auth/callback")
+async def google_callback(code: str, state: str):
+    client_id = os.environ.get('GOOGLE_CLIENT_ID')
+    client_secret = os.environ.get('GOOGLE_CLIENT_SECRET')
+    redirect_uri = os.environ.get('GOOGLE_REDIRECT_URI')
+    
+    try:
+        token_resp = requests.post('https://oauth2.googleapis.com/token', data={
+            'code': code,
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri,
+            'grant_type': 'authorization_code'
+        }).json()
+        
+        if 'error' in token_resp:
+            raise HTTPException(status_code=400, detail=token_resp['error'])
+        
+        user_email = state
+        
+        await db.google_tokens.update_one(
+            {"email": user_email},
+            {"$set": {"tokens": token_resp, "updated_at": datetime.now(timezone.utc)}},
+            upsert=True
+        )
+        
+        return RedirectResponse(url=f"/?google_auth=success&email={user_email}")
+    
+    except Exception as e:
+        logging.error(f"Google OAuth error: {str(e)}")
+        return RedirectResponse(url="/?google_auth=error")
+
+
+async def get_google_credentials(email: str):
+    token_doc = await db.google_tokens.find_one({"email": email})
+    
+    if not token_doc:
+        return None
+    
+    tokens = token_doc['tokens']
+    
+    creds = Credentials(
+        token=tokens['access_token'],
+        refresh_token=tokens.get('refresh_token'),
+        token_uri='https://oauth2.googleapis.com/token',
+        client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+        client_secret=os.environ.get('GOOGLE_CLIENT_SECRET')
+    )
+    
+    if creds.expired and creds.refresh_token:
+        creds.refresh(GoogleRequest())
+        await db.google_tokens.update_one(
+            {"email": email},
+            {"$set": {"tokens.access_token": creds.token}}
+        )
+    
+    return creds
+
+
+@api_router.post("/google/calendar/create-event")
+async def create_calendar_event(email: str, event_data: dict):
+    try:
+        creds = await get_google_credentials(email)
+        
+        if not creds:
+            raise HTTPException(status_code=401, detail="User not authenticated with Google")
+        
+        service = build('calendar', 'v3', credentials=creds)
+        
+        event = service.events().insert(
+            calendarId='primary',
+            body=event_data
+        ).execute()
+        
+        return {"event_id": event['id'], "link": event.get('htmlLink')}
+    
+    except Exception as e:
+        logging.error(f"Error creating calendar event: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/google/calendar/sync-reservations")
+async def sync_reservations_to_calendar(email: str, reservations: List[dict]):
+    try:
+        creds = await get_google_credentials(email)
+        
+        if not creds:
+            return {"success": False, "message": "Not authenticated", "synced": 0}
+        
+        service = build('calendar', 'v3', credentials=creds)
+        synced_count = 0
+        event_ids = []
+        
+        for reserva in reservations:
+            try:
+                start_datetime = f"{reserva['data']}T{reserva['horario_inicio']}:00"
+                end_datetime = f"{reserva['data']}T{reserva['horario_fim']}:00"
+                
+                event_body = {
+                    'summary': f"Consulta - {reserva['nome_profissional']} - ID {reserva['id_profissional']}",
+                    'description': f"Sala: {reserva['sala']} | Valor: R$ {reserva['valor_unitario']:.2f} | Pagamento: {reserva['forma_pagamento']}",
+                    'start': {
+                        'dateTime': start_datetime,
+                        'timeZone': 'America/Sao_Paulo'
+                    },
+                    'end': {
+                        'dateTime': end_datetime,
+                        'timeZone': 'America/Sao_Paulo'
+                    },
+                    'reminders': {
+                        'useDefault': False,
+                        'overrides': [
+                            {'method': 'email', 'minutes': 24 * 60},
+                            {'method': 'popup', 'minutes': 15}
+                        ]
+                    }
+                }
+                
+                event = service.events().insert(calendarId='primary', body=event_body).execute()
+                event_ids.append(event['id'])
+                synced_count += 1
+                
+            except Exception as e:
+                logging.error(f"Error syncing individual reservation: {str(e)}")
+                continue
+        
+        return {
+            "success": True,
+            "synced": synced_count,
+            "total": len(reservations),
+            "event_ids": event_ids
+        }
+    
+    except Exception as e:
+        logging.error(f"Error syncing reservations: {str(e)}")
+        return {"success": False, "message": str(e), "synced": 0}
+
+
 app.include_router(api_router)
 
 app.add_middleware(

@@ -205,24 +205,39 @@ export default function Resumo() {
     await salvarReservasNoBanco();
 
     const linkPagamento = obterLinkPagamento();
-    const datasFormatadas = formatarDatasParaWhatsApp();
+    const primeiraData = new Date(dadosResumo.datasRecorrentes[0]);
+    const dataExtenso = formatarDataPorExtenso(primeiraData);
+    const diaSemana = getDiaSemanaPorExtenso(dadosResumo.datasRecorrentes[0]);
+    const datasRecorrentes = formatarDatasRecorrentesParaWhatsApp();
     
-    const textoResumo = `Ola! Gostaria de confirmar meu agendamento:
+    const textoResumo = `*Informacoes Pessoais*
 
-ID: ${dadosResumo.idProfissional}
-Nome: ${dadosResumo.profissionalStatus} ${dadosResumo.profissionalNome}
-Data: ${formatarDataCurta(dadosResumo.datasRecorrentes[0])}
-Horario: ${dadosResumo.horario}
-Sala: ${getSalaDescricao(dadosResumo.sala)}
-Acrescimo: ${dadosResumo.acrescimoMinutos > 0 ? `${dadosResumo.acrescimoMinutos} minutos` : 'Sem acrescimo'}
-Recorrencia: ${dadosResumo.semanasRecorrentes > 0 ? `${dadosResumo.semanasRecorrentes} ${dadosResumo.semanasRecorrentes === 1 ? 'semana' : 'semanas'}` : 'Sem recorrencia'}
-Datas: ${datasFormatadas}
+ID Profissional: *${dadosResumo.idProfissional}*
+Nome: *${dadosResumo.profissionalStatus} ${dadosResumo.profissionalNome}*
 
-Valor unitario: R$ ${dadosResumo.valorUnitario.toFixed(2).replace('.', ',')}
-Valor total: R$ ${dadosResumo.valorTotal.toFixed(2).replace('.', ',')}
-Pagamento: ${dadosResumo.formaPagamento === 'antecipado' ? 'Antecipado (pre)' : 'No dia (pos)'}
+Informacoes do Agendamento
+Data: *${dataExtenso}*
+Dia: *${diaSemana}*
+Horario: *${dadosResumo.horario}*
+Consultorio: *${getSalaDescricao(dadosResumo.sala)}*
 
-Link de pagamento: ${linkPagamento || 'A ser fornecido'}`;
+Tempo e Valores
+Acrescimo de tempo: *${dadosResumo.acrescimoMinutos > 0 ? `+${dadosResumo.acrescimoMinutos} minutos` : 'Sem acrescimo'}*
+Valor acrescimo: *R$ ${dadosResumo.valorAcrescimo.toFixed(2).replace('.', ',')}*
+
+Recorrencia
+Atendimento recorrente: *${dadosResumo.semanasRecorrentes > 0 ? `${dadosResumo.semanasRecorrentes} ${dadosResumo.semanasRecorrentes === 1 ? 'semana' : 'semanas'}` : 'Sem recorrencia'}*
+Valor unitario: *R$ ${dadosResumo.valorUnitario.toFixed(2).replace('.', ',')}*
+Quantidade de atendimentos: *${dadosResumo.totalAgendamentos} ${dadosResumo.totalAgendamentos === 1 ? 'atendimento' : 'atendimentos'}*
+Datas dos atendimentos:
+${datasRecorrentes}
+
+Pagamento
+Forma de pagamento: *${dadosResumo.formaPagamento === 'antecipado' ? 'Antecipado (pre)' : 'No dia (pos)'}*
+Adicional pagamento: *R$ ${dadosResumo.adicionalPagamento.toFixed(2).replace('.', ',')}*
+Valor total: *R$ ${dadosResumo.valorTotal.toFixed(2).replace('.', ',')}*
+
+Link de pagamento: *${linkPagamento || 'A ser fornecido'}*`;
 
     const telefone = '5561996082572';
     const whatsappUrl = `https://wa.me/${telefone}?text=${encodeURIComponent(textoResumo)}`;

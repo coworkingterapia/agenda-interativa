@@ -116,6 +116,110 @@ export default function Resumo() {
     return `Sala ${sala}`;
   };
 
+  const obterLinkPagamento = () => {
+    const acrescimoMinutos = parseInt(sessionStorage.getItem('acrescimoMinutos') || '0');
+    const semanasRecorrentes = parseInt(sessionStorage.getItem('semanasRecorrentes') || '0');
+    const tipoPagamento = dadosResumo.formaPagamento === 'antecipado' ? 'pre' : 'pos';
+    
+    if (semanasRecorrentes === 0) {
+      return LINKS_PAGAMENTO[tipoPagamento][0][acrescimoMinutos] || LINKS_PAGAMENTO[tipoPagamento][0][0];
+    } else {
+      if (tipoPagamento === 'pre' && LINKS_PAGAMENTO.pre[semanasRecorrentes]) {
+        return LINKS_PAGAMENTO.pre[semanasRecorrentes];
+      }
+    }
+    
+    return null;
+  };
+
+  const formatarDatasParaWhatsApp = () => {
+    return dadosResumo.datasRecorrentes.map(dataStr => formatarDataCurta(dataStr)).join(', ');
+  };
+
+  const calcularHorarioFinal = () => {
+    const [hora, minuto] = dadosResumo.horario.split(':').map(Number);
+    const duracaoTotal = 60 + dadosResumo.acrescimoMinutos;
+    const novoMinuto = minuto + duracaoTotal;
+    const novaHora = hora + Math.floor(novoMinuto / 60);
+    const minutoFinal = novoMinuto % 60;
+    return `${String(novaHora).padStart(2, '0')}:${String(minutoFinal).padStart(2, '0')}`;
+  };
+
+  const salvarReservasNoBanco = async () => {
+    try {
+      const horarioFinal = calcularHorarioFinal();
+      const reservas = dadosResumo.datasRecorrentes.map(dataStr => ({
+        id_profissional: dadosResumo.idProfissional,
+        nome_profissional: `${dadosResumo.profissionalStatus} ${dadosResumo.profissionalNome}`,
+        data: dataStr,
+        horario_inicio: dadosResumo.horario,
+        horario_fim: horarioFinal,
+        sala: dadosResumo.sala,
+        acrescimo_minutos: dadosResumo.acrescimoMinutos,
+        valor_unitario: dadosResumo.valorUnitario,
+        forma_pagamento: dadosResumo.formaPagamento,
+        status: 'Pendente'
+      }));
+
+      const response = await fetch(`${API}/reservas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reservas })
+      });
+
+      if (!response.ok) {
+        console.error('Erro ao salvar reservas:', await response.text());
+      }
+    } catch (error) {
+      console.error('Erro ao salvar reservas:', error);
+    }
+  };
+
+  const handleOkReservar = () => {
+    setShowOrientacaoPopup(true);
+  };
+
+  const handleEnviarWhatsApp = async () => {
+    await salvarReservasNoBanco();
+
+    const linkPagamento = obterLinkPagamento();
+    const datasFormatadas = formatarDatasParaWhatsApp();
+    
+    const textoResumo = `Ola! Gostaria de confirmar meu agendamento:
+
+ID: ${dadosResumo.idProfissional}
+Nome: ${dadosResumo.profissionalStatus} ${dadosResumo.profissionalNome}
+Data: ${formatarDataCurta(dadosResumo.datasRecorrentes[0])}
+Horario: ${dadosResumo.horario}
+Sala: ${getSalaDescricao(dadosResumo.sala)}
+Acrescimo: ${dadosResumo.acrescimoMinutos > 0 ? `${dadosResumo.acrescimoMinutos} minutos` : 'Sem acrescimo'}
+Recorrencia: ${dadosResumo.semanasRecorrentes > 0 ? `${dadosResumo.semanasRecorrentes} ${dadosResumo.semanasRecorrentes === 1 ? 'semana' : 'semanas'}` : 'Sem recorrencia'}
+Datas: ${datasFormatadas}
+
+Valor unitario: R$ ${dadosResumo.valorUnitario.toFixed(2).replace('.', ',')}
+Valor total: R$ ${dadosResumo.valorTotal.toFixed(2).replace('.', ',')}
+Pagamento: ${dadosResumo.formaPagamento === 'antecipado' ? 'Antecipado (pre)' : 'No dia (pos)'}
+
+Link de pagamento: ${linkPagamento || 'A ser fornecido'}`;
+
+    const telefone = '5561996082572';
+    const whatsappUrl = `https://wa.me/${telefone}?text=${encodeURIComponent(textoResumo)}`;
+    
+    window.open(whatsappUrl, '_blank');
+    setShowOrientacaoPopup(false);
+  };
+
+  const handleReiniciar = () => {
+    setShowReiniciarPopup(true);
+  };
+
+  const handleConfirmarReiniciar = () => {
+    sessionStorage.clear();
+    navigate('/');
+  };
+
   if (!dadosResumo) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center">

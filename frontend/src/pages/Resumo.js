@@ -132,8 +132,28 @@ export default function Resumo() {
     return null;
   };
 
-  const formatarDatasParaWhatsApp = () => {
-    return dadosResumo.datasRecorrentes.map(dataStr => formatarDataCurta(dataStr)).join(', ');
+  const formatarDataPorExtenso = (data) => {
+    const meses = ['janeiro', 'fevereiro', 'marco', 'abril', 'maio', 'junho', 
+                   'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+    const dia = data.getDate();
+    const mes = meses[data.getMonth()];
+    const ano = data.getFullYear();
+    return `${dia} de ${mes} de ${ano}`;
+  };
+
+  const getDiaSemanaPorExtenso = (dataStr) => {
+    const data = new Date(dataStr);
+    const dias = ['Domingo', 'Segunda-feira', 'Terca-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sabado'];
+    return dias[data.getDay()];
+  };
+
+  const formatarDatasRecorrentesParaWhatsApp = () => {
+    return dadosResumo.datasRecorrentes.map(dataStr => {
+      const dataFormatada = formatarDataCurta(dataStr);
+      const diaSemana = getDiaSemanaPorExtenso(dataStr);
+      const sala = getSalaDescricao(dadosResumo.sala);
+      return `*${dataFormatada} - ${diaSemana} - ${dadosResumo.horario} - ${sala}*`;
+    }).join('\n');
   };
 
   const calcularHorarioFinal = () => {

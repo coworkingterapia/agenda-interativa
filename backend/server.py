@@ -45,12 +45,31 @@ class Reserva(BaseModel):
     sala: str
     horario: str
     duracao_minutos: int = 60
+    id_profissional: Optional[str] = None
+    nome_profissional: Optional[str] = None
+    horario_inicio: Optional[str] = None
+    horario_fim: Optional[str] = None
+    acrescimo_minutos: Optional[int] = 0
+    valor_unitario: Optional[float] = 30.0
+    forma_pagamento: Optional[str] = None
+    status: Optional[str] = "Pendente"
 
 class ReservaCreate(BaseModel):
     data: str
     sala: str
     horario: str
     duracao_minutos: int = 60
+    id_profissional: Optional[str] = None
+    nome_profissional: Optional[str] = None
+    horario_inicio: Optional[str] = None
+    horario_fim: Optional[str] = None
+    acrescimo_minutos: Optional[int] = 0
+    valor_unitario: Optional[float] = 30.0
+    forma_pagamento: Optional[str] = None
+    status: Optional[str] = "Pendente"
+
+class ReservasCreateRequest(BaseModel):
+    reservas: List[ReservaCreate]
 
 
 @api_router.get("/")

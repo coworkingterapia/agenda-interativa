@@ -244,19 +244,16 @@ Link de pagamento: *${linkPagamento || 'A ser fornecido'}*`;
 
     const telefone = '5561996082572';
     const mensagemCodificada = encodeURIComponent(textoResumo);
-    
     const whatsappUrl = `https://wa.me/${telefone}?text=${mensagemCodificada}`;
     
-    try {
-      const novaJanela = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-      
-      if (!novaJanela || novaJanela.closed || typeof novaJanela.closed === 'undefined') {
-        window.location.href = whatsappUrl;
-      }
-    } catch (error) {
-      console.error('Erro ao abrir WhatsApp:', error);
-      window.location.href = whatsappUrl;
-    }
+    const link = document.createElement('a');
+    link.href = whatsappUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     
     setShowOrientacaoPopup(false);
   };

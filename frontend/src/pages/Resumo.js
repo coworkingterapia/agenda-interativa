@@ -243,9 +243,21 @@ Valor total: *R$ ${dadosResumo.valorTotal.toFixed(2).replace('.', ',')}*
 Link de pagamento: *${linkPagamento || 'A ser fornecido'}*`;
 
     const telefone = '5561996082572';
-    const whatsappUrl = `https://wa.me/${telefone}?text=${encodeURIComponent(textoResumo)}`;
+    const mensagemCodificada = encodeURIComponent(textoResumo);
     
-    window.open(whatsappUrl, '_blank');
+    const whatsappUrl = `https://wa.me/${telefone}?text=${mensagemCodificada}`;
+    
+    try {
+      const novaJanela = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      
+      if (!novaJanela || novaJanela.closed || typeof novaJanela.closed === 'undefined') {
+        window.location.href = whatsappUrl;
+      }
+    } catch (error) {
+      console.error('Erro ao abrir WhatsApp:', error);
+      window.location.href = whatsappUrl;
+    }
+    
     setShowOrientacaoPopup(false);
   };
 

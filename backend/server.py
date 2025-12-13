@@ -200,8 +200,51 @@ async def seed_reservas():
     await db.reservas.delete_many({})
     return {"message": "Reservas de teste removidas com sucesso"}
 
+@api_router.delete("/reservas/{reserva_id}")
+async def cancelar_reserva(reserva_id: str):
+    """
+    Cancela uma reserva específica e remove do Google Calendar
+    """
+    try:
+        reserva = await db.reservas.find_one({"id": reserva_id}, {"_id": 0})
+        
+        if not reserva:
+            raise HTTPException(status_code=404, detail="Reserva não encontrada")
+        
+        google_event_id = reserva.get('google_event_id')
+        
+        if google_event_id:
+            try:
+                import google_calendar
+                resultado = google_calendar.delete_event(google_event_id)
+                
+                if resultado['success']:
+                    logging.info(f"Evento deletado do Google Calendar: {google_event_id}")
+                else:
+                    logging.warning(f"Falha ao deletar evento do Google Calendar: {resultado.get('error')}")
+            except Exception as e:
+                logging.error(f"Erro ao deletar evento do Google Calendar: {e}")
+        
+        result = await db.reservas.delete_one({"id": reserva_id})
+        
+        return {
+            "success": True,
+            "message": "Reserva cancelada com sucesso",
+            "google_calendar_deleted": bool(google_event_id)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Erro ao cancelar reserva: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.delete("/reservas")
 async def delete_all_reservas():
+    """
+    Remove TODAS as reservas (usar com cuidado!)
+    """
     result = await db.reservas.delete_many({})
     return {"message": f"{result.deleted_count} reservas removidas"}
 

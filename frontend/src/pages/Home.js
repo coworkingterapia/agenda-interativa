@@ -360,6 +360,78 @@ export default function Home() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={showHistoricoModal} onOpenChange={setShowHistoricoModal}>
+        <AlertDialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-bold text-center text-slate-800">
+              📋 Meu Histórico de Agendamentos
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-slate-600">
+              {profissionalNome && `${profissionalStatus} ${profissionalNome}`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <div className="py-4">
+            {historico.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-slate-500 text-lg">
+                  Você ainda não tem agendamentos registrados.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {historico.map((item, index) => (
+                  <div
+                    key={item.id || index}
+                    className={`border-2 rounded-xl p-4 transition-all ${getStatusCor(item)}`}
+                  >
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg font-bold text-slate-800">
+                            📅 {formatarData(item.data)}
+                          </span>
+                          {item.status === 'cancelado' && (
+                            <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+                              CANCELADO
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-slate-700 space-y-1">
+                          <p>🕐 Horário: <strong>{item.horario}</strong></p>
+                          <p>🏠 Sala: <strong>{item.sala}</strong></p>
+                          {item.recorrencia > 0 && (
+                            <p>🔄 Recorrência: <strong>{item.recorrencia} semana(s)</strong></p>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {item.status !== 'cancelado' && (
+                        <button
+                          onClick={() => cancelarAgendamento(item.id)}
+                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all"
+                        >
+                          Cancelar
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <AlertDialogFooter>
+            <Button 
+              onClick={() => setShowHistoricoModal(false)}
+              className="w-full sm:w-auto"
+            >
+              Fechar
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

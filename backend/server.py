@@ -141,17 +141,53 @@ async def get_reservas(mes: Optional[str] = None, ano: Optional[str] = None):
 
 @api_router.post("/reservas")
 async def create_reservas(request: ReservasCreateRequest):
+    """
+    Cria reservas no MongoDB e sincroniza com Google Calendar
+    """
     reservas_criadas = []
+    event_ids_criados = []
+    
+    try:
+        import google_calendar
+        google_calendar_disponivel = True
+    except Exception as e:
+        logging.warning(f"Google Calendar não disponível: {e}")
+        google_calendar_disponivel = False
     
     for reserva_data in request.reservas:
         reserva_obj = Reserva(**reserva_data.model_dump())
+        
+        if google_calendar_disponivel:
+            try:
+                resultado_calendar = google_calendar.create_event(
+                    id_profissional=reserva_obj.id_profissional,
+                    nome_profissional=reserva_obj.nome_profissional,
+                    data=reserva_obj.data,
+                    horario_inicio=reserva_obj.horario_inicio,
+                    horario_fim=reserva_obj.horario_fim,
+                    sala=reserva_obj.sala,
+                    valor_unitario=reserva_obj.valor_unitario,
+                    forma_pagamento=reserva_obj.forma_pagamento
+                )
+                
+                if resultado_calendar['success']:
+                    reserva_obj.google_event_id = resultado_calendar['event_id']
+                    event_ids_criados.append(resultado_calendar['event_id'])
+                    logging.info(f"Evento criado no Google Calendar: {resultado_calendar['event_id']}")
+                else:
+                    logging.warning(f"Falha ao criar evento no Google Calendar: {resultado_calendar.get('error')}")
+            except Exception as e:
+                logging.error(f"Erro ao criar evento no Google Calendar: {e}")
+        
         doc = reserva_obj.model_dump()
         await db.reservas.insert_one(doc)
         reservas_criadas.append(reserva_obj)
     
     return {
         "message": f"{len(reservas_criadas)} reserva(s) criada(s) com sucesso",
-        "count": len(reservas_criadas)
+        "count": len(reservas_criadas),
+        "google_calendar_synced": len(event_ids_criados),
+        "event_ids": event_ids_criados
     }
 
 @api_router.get("/reservas-por-data")

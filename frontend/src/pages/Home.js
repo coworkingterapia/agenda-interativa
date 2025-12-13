@@ -79,6 +79,91 @@ export default function Home() {
     }
   };
 
+  const carregarHistorico = () => {
+    const idProfissional = sessionStorage.getItem('idProfissional');
+    if (!idProfissional) return;
+    
+    const chave = `historico_agendamentos_${idProfissional}`;
+    const historicoSalvo = localStorage.getItem(chave);
+    
+    if (historicoSalvo) {
+      try {
+        const dados = JSON.parse(historicoSalvo);
+        setHistorico(dados);
+      } catch (e) {
+        console.error('Erro ao carregar histórico:', e);
+        setHistorico([]);
+      }
+    } else {
+      setHistorico([]);
+    }
+  };
+
+  const abrirHistorico = () => {
+    carregarHistorico();
+    setShowHistoricoModal(true);
+  };
+
+  const getStatusCor = (item) => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
+    const dataAgendamento = new Date(item.data + 'T00:00:00');
+    dataAgendamento.setHours(0, 0, 0, 0);
+    
+    if (item.status === 'cancelado') {
+      return 'bg-red-100 border-red-300';
+    }
+    
+    if (dataAgendamento < hoje) {
+      return 'bg-gray-200 border-gray-400';
+    }
+    
+    if (dataAgendamento.getTime() === hoje.getTime()) {
+      return 'bg-white border-blue-400 shadow-md';
+    }
+    
+    return 'bg-blue-50 border-blue-300';
+  };
+
+  const cancelarAgendamento = async (agendamentoId) => {
+    if (!window.confirm('Tem certeza que deseja cancelar este agendamento?')) {
+      return;
+    }
+    
+    try {
+      await axios.delete(`${API}/reservas/${agendamentoId}`);
+      
+      const idProfissional = sessionStorage.getItem('idProfissional');
+      const chave = `historico_agendamentos_${idProfissional}`;
+      const historicoAtual = JSON.parse(localStorage.getItem(chave) || '[]');
+      
+      const historicoAtualizado = historicoAtual.map(item => 
+        item.id === agendamentoId 
+          ? { ...item, status: 'cancelado' }
+          : item
+      );
+      
+      localStorage.setItem(chave, JSON.stringify(historicoAtualizado));
+      
+      setHistorico(historicoAtualizado);
+      
+      alert('Agendamento cancelado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao cancelar agendamento:', error);
+      alert('Erro ao cancelar agendamento. Tente novamente.');
+    }
+  };
+
+  const formatarData = (dataStr) => {
+    const data = new Date(dataStr + 'T00:00:00');
+    return data.toLocaleDateString('pt-BR', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric' 
+    });
+  };
+
   const redirectToWhatsApp = () => {
     const phone = "5561996082572";
     const message = encodeURIComponent(

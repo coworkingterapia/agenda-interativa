@@ -170,19 +170,24 @@ async def delete_all_reservas():
     return {"message": f"{result.deleted_count} reservas removidas"}
 
 
-@api_router.post("/upload-credentials")
-async def upload_credentials(credentials: dict):
+@api_router.post("/calendar/config")
+async def configurar_google_calendar(credentials: dict):
     """
-    Recebe as credenciais do Google Service Account e salva no arquivo
+    Configura as credenciais do Google Calendar Service Account
     
-    Body esperado:
+    Body esperado (JSON completo do Service Account):
     {
         "type": "service_account",
         "project_id": "agendaconsult-481122",
         "private_key_id": "...",
-        "private_key": "...",
-        "client_email": "...",
-        ...
+        "private_key": "-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----\\n",
+        "client_email": "agendaconsult-backend@agendaconsult-481122.iam.gserviceaccount.com",
+        "client_id": "...",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "...",
+        "universe_domain": "googleapis.com"
     }
     """
     try:
@@ -198,10 +203,25 @@ async def upload_credentials(credentials: dict):
                 detail=f"Campos obrigatórios faltando: {', '.join(missing_fields)}"
             )
         
+        # Validar tipo
         if credentials.get('type') != 'service_account':
             raise HTTPException(
                 status_code=400, 
                 detail="Tipo de credencial inválido. Deve ser 'service_account'"
+            )
+        
+        # Validar private_key
+        private_key = credentials.get('private_key', '')
+        if not private_key.startswith('-----BEGIN PRIVATE KEY-----'):
+            raise HTTPException(
+                status_code=400,
+                detail="private_key deve começar com '-----BEGIN PRIVATE KEY-----'"
+            )
+        
+        if not private_key.strip().endswith('-----END PRIVATE KEY-----'):
+            raise HTTPException(
+                status_code=400,
+                detail="private_key deve terminar com '-----END PRIVATE KEY-----'"
             )
         
         # Caminho do arquivo
@@ -210,22 +230,40 @@ async def upload_credentials(credentials: dict):
             'agendaconsult-481122-c9b54cd92f0b.json'
         )
         
-        # Salvar arquivo
-        with open(credentials_path, 'w') as f:
-            json.dump(credentials, f, indent=2)
+        # Salvar arquivo com formatação adequada
+        with open(credentials_path, 'w', encoding='utf-8') as f:
+            json.dump(credentials, f, indent=2, ensure_ascii=False)
         
-        logging.info(f"Credenciais salvas em: {credentials_path}")
+        # Testar se o arquivo pode ser lido
+        try:
+            from google.oauth2 import service_account
+            test_creds = service_account.Credentials.from_service_account_file(
+                credentials_path,
+                scopes=['https://www.googleapis.com/auth/calendar']
+            )
+            logging.info("Credenciais validadas com sucesso!")
+        except Exception as e:
+            logging.error(f"Erro ao validar credenciais: {e}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Credenciais inválidas: {str(e)}"
+            )
+        
+        logging.info(f"Google Calendar configurado com sucesso em: {credentials_path}")
         
         return {
             "success": True,
-            "message": "Credenciais salvas com sucesso",
+            "message": "Google Calendar configurado com sucesso",
             "path": credentials_path,
             "project_id": credentials.get('project_id'),
-            "client_email": credentials.get('client_email')
+            "client_email": credentials.get('client_email'),
+            "calendar_id": "coworkingterapia@gmail.com"
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
-        logging.error(f"Erro ao salvar credenciais: {e}")
+        logging.error(f"Erro ao configurar Google Calendar: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

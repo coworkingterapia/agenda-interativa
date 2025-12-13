@@ -294,6 +294,16 @@ export default function Home() {
 
           <div className="space-y-4">
             <button
+              onClick={abrirHistorico}
+              disabled={!isValidID}
+              className="w-full py-5 text-xl font-bold text-white rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 hover:shadow-xl"
+              style={{ backgroundColor: '#3B82F6' }}
+              data-testid="button-meu-historico"
+            >
+              📋 Meu Histórico
+            </button>
+            
+            <button
               onClick={() => handleButtonClick("Reservar")}
               disabled={!isButtonsEnabled && !noID}
               className="w-full py-5 text-xl font-bold text-white rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 hover:shadow-xl"

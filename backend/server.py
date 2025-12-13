@@ -170,6 +170,99 @@ async def delete_all_reservas():
     return {"message": f"{result.deleted_count} reservas removidas"}
 
 
+@api_router.post("/calendar/criar-evento")
+async def criar_evento_calendar(dados: dict):
+    """
+    Cria um evento no Google Calendar
+    
+    Body esperado:
+    {
+        "id_profissional": "011-K",
+        "nome_profissional": "Dra. Yasmin Melo",
+        "data": "2025-12-15",
+        "horario_inicio": "10:00",
+        "horario_fim": "11:15",
+        "sala": "03",
+        "valor_unitario": 38.0,
+        "forma_pagamento": "antecipado"
+    }
+    """
+    try:
+        from services.google_calendar_service import criar_evento_calendar as criar_evento
+        
+        resultado = criar_evento(dados)
+        
+        if resultado['success']:
+            return {
+                "success": True,
+                "event_id": resultado['event_id'],
+                "link": resultado['link'],
+                "message": resultado['message']
+            }
+        else:
+            raise HTTPException(status_code=500, detail=resultado['message'])
+            
+    except ImportError as e:
+        logging.error(f"Erro ao importar serviço do Google Calendar: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail="Serviço do Google Calendar não disponível. Verifique as credenciais."
+        )
+    except Exception as e:
+        logging.error(f"Erro ao criar evento: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/calendar/criar-multiplos-eventos")
+async def criar_multiplos_eventos_calendar(dados: dict):
+    """
+    Cria múltiplos eventos no Google Calendar (para agendamentos recorrentes)
+    
+    Body esperado:
+    {
+        "agendamentos": [
+            {
+                "id_profissional": "011-K",
+                "nome_profissional": "Dra. Yasmin Melo",
+                "data": "2025-12-15",
+                "horario_inicio": "10:00",
+                "horario_fim": "11:15",
+                "sala": "03",
+                "valor_unitario": 38.0,
+                "forma_pagamento": "antecipado"
+            }
+        ]
+    }
+    """
+    try:
+        from services.google_calendar_service import criar_multiplos_eventos
+        
+        agendamentos = dados.get('agendamentos', [])
+        
+        if not agendamentos:
+            raise HTTPException(status_code=400, detail="Lista de agendamentos vazia")
+        
+        resultado = criar_multiplos_eventos(agendamentos)
+        
+        return {
+            "success": resultado['success'],
+            "total_criados": resultado['total_criados'],
+            "total_erros": resultado['total_erros'],
+            "eventos": resultado['eventos_criados'],
+            "erros": resultado['erros']
+        }
+            
+    except ImportError as e:
+        logging.error(f"Erro ao importar serviço do Google Calendar: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail="Serviço do Google Calendar não disponível. Verifique as credenciais."
+        )
+    except Exception as e:
+        logging.error(f"Erro ao criar eventos: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.get("/google/auth/login")
 async def google_login(email: str):
     client_id = os.environ.get('GOOGLE_CLIENT_ID')

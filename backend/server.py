@@ -170,6 +170,65 @@ async def delete_all_reservas():
     return {"message": f"{result.deleted_count} reservas removidas"}
 
 
+@api_router.post("/upload-credentials")
+async def upload_credentials(credentials: dict):
+    """
+    Recebe as credenciais do Google Service Account e salva no arquivo
+    
+    Body esperado:
+    {
+        "type": "service_account",
+        "project_id": "agendaconsult-481122",
+        "private_key_id": "...",
+        "private_key": "...",
+        "client_email": "...",
+        ...
+    }
+    """
+    try:
+        import json
+        
+        # Validar campos obrigatórios
+        required_fields = ['type', 'project_id', 'private_key', 'client_email']
+        missing_fields = [field for field in required_fields if field not in credentials]
+        
+        if missing_fields:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Campos obrigatórios faltando: {', '.join(missing_fields)}"
+            )
+        
+        if credentials.get('type') != 'service_account':
+            raise HTTPException(
+                status_code=400, 
+                detail="Tipo de credencial inválido. Deve ser 'service_account'"
+            )
+        
+        # Caminho do arquivo
+        credentials_path = os.path.join(
+            os.path.dirname(__file__), 
+            'agendaconsult-481122-c9b54cd92f0b.json'
+        )
+        
+        # Salvar arquivo
+        with open(credentials_path, 'w') as f:
+            json.dump(credentials, f, indent=2)
+        
+        logging.info(f"Credenciais salvas em: {credentials_path}")
+        
+        return {
+            "success": True,
+            "message": "Credenciais salvas com sucesso",
+            "path": credentials_path,
+            "project_id": credentials.get('project_id'),
+            "client_email": credentials.get('client_email')
+        }
+        
+    except Exception as e:
+        logging.error(f"Erro ao salvar credenciais: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/calendar/criar-evento")
 async def criar_evento_calendar(dados: dict):
     """

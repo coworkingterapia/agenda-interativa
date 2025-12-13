@@ -191,7 +191,25 @@ export default function Resumo() {
         body: JSON.stringify({ reservas })
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        const chaveHistorico = `historico_agendamentos_${dadosResumo.idProfissional}`;
+        const historicoAtual = JSON.parse(localStorage.getItem(chaveHistorico) || '[]');
+        
+        dadosResumo.datasRecorrentes.forEach(dataStr => {
+          const novoItem = {
+            id: `${dadosResumo.idProfissional}-${dataStr}-${dadosResumo.horario}`,
+            data: dataStr,
+            horario: dadosResumo.horario,
+            sala: dadosResumo.sala,
+            status: 'confirmado',
+            recorrencia: dadosResumo.semanasRecorrentes || 0
+          };
+          
+          historicoAtual.push(novoItem);
+        });
+        
+        localStorage.setItem(chaveHistorico, JSON.stringify(historicoAtual));
+      } else {
         const errorText = await response.text();
         console.error('Erro ao salvar reservas:', errorText);
       }

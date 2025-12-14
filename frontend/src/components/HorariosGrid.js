@@ -28,6 +28,34 @@ const minutosParaHorario = (minutos) => {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 };
 
+const horarioJaPassou = (horario, dataSelecionada) => {
+  if (!dataSelecionada) return false;
+  
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  
+  const dataParaVerificar = new Date(dataSelecionada);
+  dataParaVerificar.setHours(0, 0, 0, 0);
+  
+  if (dataParaVerificar.getTime() > hoje.getTime()) {
+    return false;
+  }
+  
+  if (dataParaVerificar.getTime() < hoje.getTime()) {
+    return false;
+  }
+  
+  const agora = new Date();
+  const [hora, minuto] = horario.split(':').map(Number);
+  const horaAtual = agora.getHours();
+  const minutoAtual = agora.getMinutes();
+  
+  const minutosHorario = hora * 60 + minuto;
+  const minutosAgora = horaAtual * 60 + minutoAtual;
+  
+  return minutosHorario <= minutosAgora;
+};
+
 export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, onSelectHorario }) {
   const [reservas, setReservas] = useState([]);
   const [horariosBloqueados, setHorariosBloqueados] = useState(new Set());

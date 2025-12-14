@@ -173,6 +173,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "API endpoint DELETE /api/reservas/{id} working correctly. Successfully cancels reservations and removes them from database. Returns proper response with success: true, message, and google_calendar_deleted: false (since Google Calendar sync is not working). Tested with reservation ID c5602ded-89a0-409f-bfee-e02ecd3e7602."
+        - working: true
+          agent: "testing"
+          comment: "✅ CONFIRMED WORKING with Google Calendar integration. Successfully cancels reservations and removes events from Google Calendar. Returns success=true and google_calendar_deleted=true (CRITICAL IMPROVEMENT). Tested with reservation ID 764fa156-9b6e-4b36-95e2-77b4ee2b4412. Reservation properly removed from database and Google Calendar event deleted."
 
   - task: "CORS Configuration"
     implemented: true

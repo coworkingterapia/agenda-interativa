@@ -234,7 +234,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Complete WhatsApp Integration Flow Testing"
+    - "Expediente Encerrado Popup Logic"
+    - "Expediente Encerrado Popup Back Button"
+    - "Professional ID Login Flow"
+    - "Calendar Date Selection"
+    - "Horarios Page Time Slot Display"
+    - "HorariosGrid Disabled State Detection"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"

@@ -71,7 +71,7 @@ export default function Home() {
           setPopupMessage("Por favor, digite três números e uma letra referente à sua ID Profissional.");
           setShowPopup(true);
         } else if (newAttempts >= 2) {
-          redirectToWhatsApp();
+          showIDNotFoundMessage();
         }
       }
     } catch (e) {

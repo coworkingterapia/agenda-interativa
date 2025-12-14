@@ -170,8 +170,6 @@ export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, on
     onSelectHorario(horario, temConflito);
   };
 
-  const todosHorarios = gerarHorarios();
-
   if (loading) {
     return (
       <div className="text-center py-12">

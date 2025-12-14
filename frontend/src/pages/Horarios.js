@@ -130,6 +130,7 @@ export default function Horarios() {
             dataSelecionada={dataSelecionada}
             acrescimoMinutos={acrescimoMinutos}
             onSelectHorario={handleSelectHorario}
+            onTodosHorariosDesabilitados={handleTodosHorariosDesabilitados}
           />
         </div>
 

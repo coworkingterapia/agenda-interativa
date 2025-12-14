@@ -241,10 +241,18 @@ export default function Resumo() {
       if (resultado.success) {
         setShowOrientacaoPopup(false);
         
-        alert('✅ Reserva confirmada com sucesso!\n\nVocê pode consultar seus agendamentos em "Meu Histórico" na tela inicial.');
+        let mensagem = '✅ Reserva confirmada com sucesso!\n\nVocê pode consultar seus agendamentos em "Meu Histórico" na tela inicial.';
+        if (resultado.warning) {
+          mensagem += `\n\n⚠️ Aviso: ${resultado.warning}`;
+        }
+        
+        alert(mensagem);
         
         sessionStorage.clear();
-        navigate('/');
+        
+        setTimeout(() => {
+          navigate('/', { replace: true });
+        }, 100);
       } else {
         setShowOrientacaoPopup(false);
         

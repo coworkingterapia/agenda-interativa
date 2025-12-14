@@ -246,4 +246,4 @@ test_plan:
 
 agent_communication:
     - agent: "testing"
-      message: "Comprehensive testing completed for WhatsApp integration flow. All backend APIs are working correctly. Frontend components are properly implemented. The complete flow from CARD 8 (Resumo) to WhatsApp message sending is functional. Backend successfully validates professional ID 011-K (Dra. Yasmin Melo), creates reservations with test data, and handles all API calls correctly. Frontend generates proper WhatsApp URLs with complete message formatting including all required information. No critical issues found. The reported problem with the 'Ok, reservar' button not sending to WhatsApp appears to be resolved - all components are working as expected."
+      message: "Starting comprehensive testing of 'Expediente encerrado' popup functionality. Will test the complete flow: login with ID 011-K → calendar navigation → today's date selection → horarios page → popup appearance when all slots disabled → back button functionality. Focus on verifying 2-second delay, proper popup content, and navigation back to calendar."

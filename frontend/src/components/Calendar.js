@@ -57,6 +57,20 @@ export default function Calendar({ onSelectDate }) {
     return day === 0 || day === 6;
   };
 
+  const isDataPassada = (dia) => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
+    const dataParaVerificar = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      dia
+    );
+    dataParaVerificar.setHours(0, 0, 0, 0);
+    
+    return dataParaVerificar < hoje;
+  };
+
   const temReserva = (dia) => {
     const dataStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
     return reservas.some(r => r.data === dataStr);

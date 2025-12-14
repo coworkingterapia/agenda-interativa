@@ -183,31 +183,41 @@ export default function Resumo() {
       });
 
       if (response.ok) {
-        const chaveHistorico = `historico_agendamentos_${dadosResumo.idProfissional}`;
-        const historicoAtual = JSON.parse(localStorage.getItem(chaveHistorico) || '[]');
-        const linkPagamento = obterLinkPagamento();
-        const agora = new Date();
-        const dataCriacao = `${String(agora.getDate()).padStart(2, '0')}/${String(agora.getMonth() + 1).padStart(2, '0')}/${agora.getFullYear()} ${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
-        
-        dadosResumo.datasRecorrentes.forEach(dataStr => {
-          const novoItem = {
-            id: `${dadosResumo.idProfissional}-${dataStr}-${dadosResumo.horario}`,
-            data: dataStr,
-            horario: dadosResumo.horario,
-            sala: dadosResumo.sala,
-            status: 'confirmado',
-            recorrencia: dadosResumo.semanasRecorrentes || 0,
-            status_pagamento: 'aguardando',
-            link_pagamento: linkPagamento,
-            data_criacao: dataCriacao,
-            valor_total: dadosResumo.valorTotal
-          };
+        try {
+          const chaveHistorico = `historico_agendamentos_${dadosResumo.idProfissional}`;
+          const historicoAtual = JSON.parse(localStorage.getItem(chaveHistorico) || '[]');
+          const linkPagamento = obterLinkPagamento();
+          const agora = new Date();
+          const dataCriacao = `${String(agora.getDate()).padStart(2, '0')}/${String(agora.getMonth() + 1).padStart(2, '0')}/${agora.getFullYear()} ${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
           
-          historicoAtual.push(novoItem);
-        });
-        
-        localStorage.setItem(chaveHistorico, JSON.stringify(historicoAtual));
-        return { success: true };
+          console.log('💾 Salvando no localStorage:', chaveHistorico);
+          
+          dadosResumo.datasRecorrentes.forEach(dataStr => {
+            const novoItem = {
+              id: `${dadosResumo.idProfissional}-${dataStr}-${dadosResumo.horario}`,
+              data: dataStr,
+              horario: dadosResumo.horario,
+              sala: dadosResumo.sala,
+              status: 'confirmado',
+              recorrencia: dadosResumo.semanasRecorrentes || 0,
+              status_pagamento: 'aguardando',
+              link_pagamento: linkPagamento,
+              data_criacao: dataCriacao,
+              valor_total: dadosResumo.valorTotal
+            };
+            
+            console.log('📝 Item adicionado:', novoItem);
+            historicoAtual.push(novoItem);
+          });
+          
+          localStorage.setItem(chaveHistorico, JSON.stringify(historicoAtual));
+          console.log('✅ Histórico salvo com sucesso! Total de itens:', historicoAtual.length);
+          
+          return { success: true };
+        } catch (localStorageError) {
+          console.error('❌ Erro ao salvar no localStorage:', localStorageError);
+          return { success: true, warning: 'Reserva criada, mas não foi possível salvar no histórico local' };
+        }
       } else {
         const errorData = await response.json();
         const errorMessage = errorData.detail || 'Erro ao salvar reservas';

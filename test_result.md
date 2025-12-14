@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Testar a funcionalidade do popup 'Expediente encerrado' na página de Horários da aplicação 'Agenda Interativa'. O popup deve aparecer quando todos os horários estão desabilitados/bloqueados, com delay de 2 segundos, e o botão 'Voltar' deve redirecionar para o calendário."
+user_problem_statement: "Testar a integração completa com Google Calendar na aplicação 'Agenda Interativa': 1) Criação de reserva + sincronização Google Calendar, 2) Verificação da reserva no DB, 3) Cancelamento + remoção do Google Calendar, 4) Validação de credenciais."
 
 backend:
   - task: "Professional ID Validation API"

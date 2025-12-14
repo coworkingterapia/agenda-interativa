@@ -270,14 +270,13 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Expediente Encerrado Popup Logic"
-    - "Expediente Encerrado Popup Back Button"
-    - "Professional ID Login Flow"
-    - "Calendar Date Selection"
-    - "Horarios Page Time Slot Display"
-    - "HorariosGrid Disabled State Detection"
-  stuck_tasks: []
-  test_all: true
+    - "Google Calendar Integration"
+    - "Reservations Creation API"
+    - "Reservations by Date API"
+    - "Reservation Cancellation API"
+  stuck_tasks:
+    - "Google Calendar Integration"
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:

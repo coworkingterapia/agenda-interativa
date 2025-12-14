@@ -185,6 +185,9 @@ export default function Resumo() {
       if (response.ok) {
         const chaveHistorico = `historico_agendamentos_${dadosResumo.idProfissional}`;
         const historicoAtual = JSON.parse(localStorage.getItem(chaveHistorico) || '[]');
+        const linkPagamento = obterLinkPagamento();
+        const agora = new Date();
+        const dataCriacao = `${String(agora.getDate()).padStart(2, '0')}/${String(agora.getMonth() + 1).padStart(2, '0')}/${agora.getFullYear()} ${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
         
         dadosResumo.datasRecorrentes.forEach(dataStr => {
           const novoItem = {
@@ -193,7 +196,11 @@ export default function Resumo() {
             horario: dadosResumo.horario,
             sala: dadosResumo.sala,
             status: 'confirmado',
-            recorrencia: dadosResumo.semanasRecorrentes || 0
+            recorrencia: dadosResumo.semanasRecorrentes || 0,
+            status_pagamento: 'aguardando',
+            link_pagamento: linkPagamento,
+            data_criacao: dataCriacao,
+            valor_total: dadosResumo.valorTotal
           };
           
           historicoAtual.push(novoItem);

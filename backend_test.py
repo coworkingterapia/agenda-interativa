@@ -62,37 +62,49 @@ def test_backend_health():
         return False
 
 def test_professional_validation():
-    """Test professional ID validation endpoint"""
-    print_test_header("Professional ID Validation")
+    """Test professional ID validation endpoint - NEW USERS FROM REVIEW REQUEST"""
+    print_test_header("Professional ID Validation - 3 New Users")
     
-    # Test valid ID (from test data)
-    test_id = "011-K"
-    try:
-        response = requests.post(
-            f"{API_BASE}/validate-id",
-            json={"id_profissional": test_id},
-            timeout=10
-        )
-        
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("valid") and data.get("profissional"):
-                prof = data["profissional"]
-                if prof["nome"] == "Yasmin Melo" and prof["status_tratamento"] == "Dra.":
-                    print_success(f"Professional validation working - Found: {prof['status_tratamento']} {prof['nome']}")
-                    return True
+    # Test the 3 new users as specified in review request
+    new_users = [
+        {"id": "001-Q", "expected_name": "Evandro Francisco", "expected_status": "Dr."},
+        {"id": "000-Y", "expected_name": "Terapeuta", "expected_status": "Dr."},
+        {"id": "100-Y", "expected_name": "Terapeuta", "expected_status": "Dra."}
+    ]
+    
+    all_passed = True
+    
+    for user in new_users:
+        test_id = user["id"]
+        try:
+            # Use GET method as specified in review request
+            response = requests.get(
+                f"{API_BASE}/profissionais/validar",
+                params={"id_profissional": test_id},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("valid") and data.get("profissional"):
+                    prof = data["profissional"]
+                    if (prof["nome"] == user["expected_name"] and 
+                        prof["status_tratamento"] == user["expected_status"]):
+                        print_success(f"✅ {test_id} → {prof['status_tratamento']} {prof['nome']}")
+                    else:
+                        print_error(f"❌ {test_id} → Expected: {user['expected_status']} {user['expected_name']}, Got: {prof['status_tratamento']} {prof['nome']}")
+                        all_passed = False
                 else:
-                    print_error(f"Unexpected professional data: {prof}")
-                    return False
+                    print_error(f"❌ {test_id} → Professional not found or invalid response: {data}")
+                    all_passed = False
             else:
-                print_error(f"Professional not found or invalid response: {data}")
-                return False
-        else:
-            print_error(f"Validation endpoint returned status: {response.status_code}")
-            return False
-    except requests.exceptions.RequestException as e:
-        print_error(f"Failed to validate professional: {e}")
-        return False
+                print_error(f"❌ {test_id} → Validation endpoint returned status: {response.status_code}")
+                all_passed = False
+        except requests.exceptions.RequestException as e:
+            print_error(f"❌ {test_id} → Failed to validate professional: {e}")
+            all_passed = False
+    
+    return all_passed
 
 def test_google_calendar_credentials():
     """Test Google Calendar credentials and service availability"""

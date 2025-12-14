@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Testar o fluxo completo de envio de mensagem para WhatsApp na aplicação 'Agenda Interativa'. O problema está no CARD 8 (Resumo do Agendamento), onde o botão 'Ok, reservar' deveria enviar a mensagem para WhatsApp, mas aparentemente não está funcionando."
+user_problem_statement: "Testar a funcionalidade do popup 'Expediente encerrado' na página de Horários da aplicação 'Agenda Interativa'. O popup deve aparecer quando todos os horários estão desabilitados/bloqueados, com delay de 2 segundos, e o botão 'Voltar' deve redirecionar para o calendário."
 
 backend:
   - task: "Professional ID Validation API"

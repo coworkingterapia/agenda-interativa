@@ -131,7 +131,7 @@ backend:
 
   - task: "Google Calendar Integration"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/google_calendar.py"
     stuck_count: 1
     priority: "high"
@@ -140,6 +140,9 @@ backend:
         - working: false
           agent: "testing"
           comment: "Google Calendar integration implemented but not working. Credentials file exists at /app/backend/agendaconsult-481122-c9b54cd92f0b.json but contains invalid/corrupted private key. Error: 'Could not deserialize key data. ASN.1 parsing error: short data (needed at least 153 additional bytes)'. The private key appears to be **mocked** or truncated. Reservation creation works but google_calendar_synced returns 0 and no event_ids are generated."
+        - working: true
+          agent: "testing"
+          comment: "✅ GOOGLE CALENDAR INTEGRATION NOW WORKING! New credentials (key ID: 8e133c25b4f2) successfully installed and tested. TESTE 1: ✅ Reservation creation with google_calendar_synced=1, event_ids=['lo46ksicn3v5etfs8k1jdhr9ho']. TESTE 2: ✅ google_event_id properly saved in MongoDB. TESTE 3: ✅ Reservation cancellation with google_calendar_deleted=true, event removed from Google Calendar. TESTE 4: ✅ Multiple reservations with google_calendar_synced=2, event_ids=['v9f70bcbtr84hub20d64v85mmo', '83kfvltdi5cu5cgtt45ftql2ms']. All Google Calendar operations functioning correctly."
 
   - task: "Reservations by Date API"
     implemented: true

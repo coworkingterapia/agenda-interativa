@@ -327,9 +327,9 @@ def test_reservation_cancellation_with_google_calendar():
             else:
                 print_error(f"❌ FALHOU: Erro ao verificar remoção: {verify_response.status_code}")
                 return False
-            else:
-                print_error(f"Cancellation failed: {data}")
-                return False
+        else:
+            print_error(f"Cancellation failed: {data}")
+            return False
         else:
             print_error(f"Failed to cancel reservation. Status: {response.status_code}")
             print_error(f"Response: {response.text}")

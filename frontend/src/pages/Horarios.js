@@ -202,6 +202,32 @@ export default function Horarios() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Popup de Expediente Encerrado */}
+      <AlertDialog open={showExpedienteEncerradoPopup} onOpenChange={setShowExpedienteEncerradoPopup}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <div className="flex flex-col items-center mb-4">
+              <span className="text-6xl mb-4">⚠️</span>
+              <AlertDialogTitle className="text-2xl text-center">
+                Expediente encerrado
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-base text-center leading-relaxed">
+              Você não conseguirá fazer reserva de horário para hoje, pois nossos expedientes já se encontram encerrados, mas você poderá reservar para qualquer dia, a partir de amanhã!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button 
+              onClick={handleVoltarParaCalendario}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              data-testid="button-voltar-calendario"
+            >
+              Voltar
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

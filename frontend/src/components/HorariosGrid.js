@@ -118,6 +118,18 @@ export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, on
     }
   }, [reservas, calcularBloqueios]);
 
+  useEffect(() => {
+    if (!dataSelecionada || !onTodosHorariosDesabilitados) return;
+
+    const todosDesabilitados = todosHorarios.every(horario => {
+      const bloqueado = horariosBloqueados.has(horario);
+      const jaPassou = horarioJaPassou(horario, dataSelecionada);
+      return bloqueado || jaPassou;
+    });
+
+    onTodosHorariosDesabilitados(todosDesabilitados);
+  }, [dataSelecionada, horariosBloqueados, todosHorarios, onTodosHorariosDesabilitados]);
+
   const verificarConflito = (horario) => {
     const horarioInicioMinutos = horarioParaMinutos(horario);
     const duracaoAtendimento = 60 + acrescimoMinutos;

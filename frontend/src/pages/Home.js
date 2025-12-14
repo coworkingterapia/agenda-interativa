@@ -310,16 +310,6 @@ export default function Home() {
             </button>
 
             <button
-              onClick={() => handleButtonClick("Desmarcar/Remarcar")}
-              disabled={!isButtonsEnabled && !noID}
-              className="w-full py-5 text-xl font-bold text-white rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 hover:shadow-xl"
-              style={{ backgroundColor: '#E449A7' }}
-              data-testid="button-desmarcar-remarcar"
-            >
-              Desmarcar/ Remarcar
-            </button>
-
-            <button
               onClick={() => handleButtonClick("Visitar o local")}
               disabled={!isButtonsEnabled && !noID}
               className="w-full py-5 text-xl font-bold text-white rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-105 hover:shadow-xl"

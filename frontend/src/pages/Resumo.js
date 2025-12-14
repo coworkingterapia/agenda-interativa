@@ -40,6 +40,10 @@ export default function Resumo() {
   const [dadosResumo, setDadosResumo] = useState(null);
   const [showOrientacaoPopup, setShowOrientacaoPopup] = useState(false);
   const [showReiniciarPopup, setShowReiniciarPopup] = useState(false);
+  const [creditos, setCreditos] = useState(0);
+  const [valorOriginal, setValorOriginal] = useState(0);
+  const [creditoUtilizado, setCreditoUtilizado] = useState(0);
+  const [valorFinal, setValorFinal] = useState(0);
 
   useEffect(() => {
     const profissionalNome = sessionStorage.getItem('profissionalNome');

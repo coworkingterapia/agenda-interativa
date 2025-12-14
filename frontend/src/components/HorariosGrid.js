@@ -142,6 +142,11 @@ export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, on
   };
 
   const handleHorarioClick = (horario) => {
+    if (horarioJaPassou(horario, dataSelecionada)) {
+      alert('⚠️ Horário já passou - não permitido!\n\nNão é possível fazer reservas para horários retroativos.');
+      return;
+    }
+    
     if (horariosBloqueados.has(horario)) {
       return;
     }

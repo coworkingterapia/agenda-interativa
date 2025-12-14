@@ -128,6 +128,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "API endpoint /api/reservas working correctly. Successfully creates reservations with test data (ID: 011-K, Date: 2025-12-20, Time: 14:00-15:15, Room: 03, Extra: 15min, Value: R$ 38.00). Reservation saved to database and verified. Google Calendar sync attempted but failed due to invalid credentials."
+        - working: true
+          agent: "testing"
+          comment: "✅ CONFIRMED WORKING with Google Calendar integration. Successfully creates reservations with proper Google Calendar sync. Test data: Date: 2025-12-21, Professional: Dra. Yasmin Melo (011-K), Time: 09:00-10:00, Room: 02. Returns google_calendar_synced=1 and valid event_ids array. Multiple reservations also working correctly with google_calendar_synced=2."
 
   - task: "Google Calendar Integration"
     implemented: true

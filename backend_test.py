@@ -269,8 +269,8 @@ def test_database_verification():
         return False
 
 def test_reservation_cancellation_with_google_calendar():
-    """Test reservation cancellation with Google Calendar event deletion"""
-    print_test_header("Reservation Cancellation + Google Calendar Deletion")
+    """Test reservation cancellation with Google Calendar event deletion - EXACT USER REQUIREMENTS"""
+    print_test_header("TESTE 3: Cancelamento + Google Calendar")
     
     # Check if we have a reservation ID from previous test
     if 'test_reservation_id' not in globals():

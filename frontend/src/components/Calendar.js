@@ -138,7 +138,14 @@ export default function Calendar({ onSelectDate }) {
   };
 
   const handleDayClick = (diaObj) => {
-    if (!diaObj.mesAtual || diaObj.desabilitado) return;
+    if (!diaObj.mesAtual) return;
+    
+    if (diaObj.dataPassada) {
+      alert('⚠️ Data passada - não permitida!\n\nNão é possível fazer reservas para datas retroativas.');
+      return;
+    }
+    
+    if (diaObj.desabilitado) return;
     
     const dataCompleta = new Date(currentDate.getFullYear(), currentDate.getMonth(), diaObj.dia);
     setSelectedDate(dataCompleta);

@@ -225,10 +225,10 @@ def test_reservations_with_google_calendar():
         return False
 
 def test_database_verification():
-    """Test database verification - EXACT USER REQUIREMENTS"""
+    """Test database verification - REVIEW REQUEST SCENARIO"""
     print_test_header("TESTE 2: Verificação no Database")
     
-    test_date = "2025-12-21"
+    test_date = "2025-12-26"
     
     try:
         print_info(f"Verificando reservas para data: {test_date}")

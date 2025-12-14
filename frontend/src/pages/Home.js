@@ -383,6 +383,21 @@ export default function Home() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           
+          {/* Saldo de Créditos */}
+          {creditos > 0 && (
+            <div className="mx-6 bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-lg font-semibold text-slate-700">💳 Saldo de Créditos:</span>
+                <span className="text-2xl font-bold text-blue-700">
+                  R$ {creditos.toFixed(2).replace('.', ',')}
+                </span>
+              </div>
+              <p className="text-sm text-slate-600 mt-2">
+                Este crédito será usado automaticamente em suas próximas reservas.
+              </p>
+            </div>
+          )}
+          
           {/* Legenda de Status */}
           <div className="flex items-center gap-4 text-sm bg-slate-50 p-3 rounded-lg mx-6">
             <span className="font-semibold text-slate-700">Status de Pagamento:</span>

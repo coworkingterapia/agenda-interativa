@@ -115,7 +115,10 @@ async def seed_profissionais():
         {"id_profissional": "016-P", "nome": "Graci Santana", "status_tratamento": "Dra."},
         {"id_profissional": "008-P", "nome": "Julia Moura", "status_tratamento": "Dra."},
         {"id_profissional": "001-B", "nome": "Sâmia Faulin", "status_tratamento": "Dra."},
-        {"id_profissional": "020-T", "nome": "Sângely", "status_tratamento": "Dra."}
+        {"id_profissional": "020-T", "nome": "Sângely", "status_tratamento": "Dra."},
+        {"id_profissional": "001-Q", "nome": "Evandro Francisco", "status_tratamento": "Dr."},
+        {"id_profissional": "000-Y", "nome": "Terapeuta", "status_tratamento": "Dr."},
+        {"id_profissional": "100-Y", "nome": "Terapeuta", "status_tratamento": "Dra."}
     ]
     
     await db.profissionais.delete_many({})

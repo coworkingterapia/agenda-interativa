@@ -348,20 +348,110 @@ def test_reservation_cancellation_with_google_calendar():
         print_error(f"Failed to test reservation cancellation: {e}")
         return False
 
+def test_second_user_reservation():
+    """Test second reservation for another user - REVIEW REQUEST SCENARIO"""
+    print_test_header("TESTE 4: Segunda Reserva para Outro Usuário - 000-Y")
+    
+    # Prepare test data EXACTLY as specified in review request
+    test_date = "2025-12-27"
+    test_reservations = {
+        "reservas": [
+            {
+                "data": test_date,
+                "sala": "02",
+                "horario": "14:00",
+                "duracao_minutos": 60,
+                "id_profissional": "000-Y",
+                "nome_profissional": "Dr. Terapeuta",
+                "horario_inicio": "14:00",
+                "horario_fim": "15:00",
+                "acrescimo_minutos": 0,
+                "valor_unitario": 30.0,
+                "forma_pagamento": "antecipado",
+                "status": "Pendente"
+            }
+        ]
+    }
+    
+    try:
+        print_info("Criando segunda reserva para usuário 000-Y...")
+        response = requests.post(
+            f"{API_BASE}/reservas",
+            json=test_reservations,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        if response.status_code in [200, 201]:
+            data = response.json()
+            print_info(f"Response data: {json.dumps(data, indent=2)}")
+            
+            # VERIFICAR: "google_calendar_synced": 1
+            google_synced = data.get("google_calendar_synced", 0)
+            if google_synced == 1:
+                print_success(f"✅ VERIFICADO: google_calendar_synced = {google_synced}")
+            else:
+                print_error(f"❌ FALHOU: google_calendar_synced = {google_synced}, esperado = 1")
+                return False
+            
+            # VERIFICAR: Array "event_ids" com 1 ID
+            event_ids = data.get("event_ids", [])
+            if event_ids and len(event_ids) == 1:
+                print_success(f"✅ VERIFICADO: event_ids array com {len(event_ids)} ID: {event_ids}")
+                
+                # Verify the reservation in database
+                print_info(f"Verificando reserva no banco para data: {test_date}")
+                verify_response = requests.get(
+                    f"{API_BASE}/reservas-por-data",
+                    params={"data": test_date},
+                    timeout=10
+                )
+                
+                if verify_response.status_code == 200:
+                    reservations = verify_response.json()
+                    if len(reservations) > 0:
+                        reservation = reservations[0]
+                        if (reservation.get('id_profissional') == '000-Y' and
+                            reservation.get('horario_inicio') == '14:00' and
+                            reservation.get('horario_fim') == '15:00' and
+                            reservation.get('sala') == '02'):
+                            print_success("✅ VERIFICADO: Reserva salva corretamente no banco")
+                            return True
+                        else:
+                            print_error("❌ FALHOU: Dados da reserva incorretos no banco")
+                            return False
+                    else:
+                        print_error("❌ FALHOU: Reserva não encontrada no banco")
+                        return False
+                else:
+                    print_error(f"❌ FALHOU: Erro ao verificar banco: {verify_response.status_code}")
+                    return False
+            else:
+                print_error(f"❌ FALHOU: event_ids array com {len(event_ids)} IDs, esperado = 1: {event_ids}")
+                return False
+        else:
+            print_error(f"❌ FALHOU: Status code {response.status_code}")
+            print_error(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print_error(f"❌ FALHOU: Erro de conexão: {e}")
+        return False
+
 def test_multiple_reservations():
-    """Test multiple reservations creation - EXACT USER REQUIREMENTS"""
-    print_test_header("TESTE 4: Múltiplas Reservas")
+    """Test multiple reservations creation - BACKUP TEST"""
+    print_test_header("TESTE EXTRA: Múltiplas Reservas")
     
     # Prepare test data with 2 reservations for different dates
     test_reservations = {
         "reservas": [
             {
-                "data": "2025-12-22",
+                "data": "2025-12-28",
                 "sala": "01",
                 "horario": "10:00",
                 "duracao_minutos": 60,
-                "id_profissional": "011-K",
-                "nome_profissional": "Dra. Yasmin Melo",
+                "id_profissional": "100-Y",
+                "nome_profissional": "Dra. Terapeuta",
                 "horario_inicio": "10:00",
                 "horario_fim": "11:00",
                 "acrescimo_minutos": 0,
@@ -370,14 +460,14 @@ def test_multiple_reservations():
                 "status": "Pendente"
             },
             {
-                "data": "2025-12-23",
-                "sala": "02",
-                "horario": "14:00",
+                "data": "2025-12-29",
+                "sala": "03",
+                "horario": "16:00",
                 "duracao_minutos": 60,
-                "id_profissional": "011-K",
-                "nome_profissional": "Dra. Yasmin Melo",
-                "horario_inicio": "14:00",
-                "horario_fim": "15:00",
+                "id_profissional": "100-Y",
+                "nome_profissional": "Dra. Terapeuta",
+                "horario_inicio": "16:00",
+                "horario_fim": "17:00",
                 "acrescimo_minutos": 0,
                 "valor_unitario": 30.0,
                 "forma_pagamento": "antecipado",

@@ -132,24 +132,24 @@ def test_google_calendar_credentials():
         return False
 
 def test_reservations_with_google_calendar():
-    """Test reservation creation with Google Calendar synchronization"""
-    print_test_header("Reservations Creation + Google Calendar Sync")
+    """Test reservation creation with Google Calendar synchronization - EXACT USER REQUIREMENTS"""
+    print_test_header("TESTE 1: Criação de Reserva + Google Calendar")
     
-    # Prepare test data matching the user's requirements
-    test_date = "2025-12-20"
+    # Prepare test data EXACTLY as specified by user
+    test_date = "2025-12-21"
     test_reservations = {
         "reservas": [
             {
                 "data": test_date,
-                "sala": "03",
-                "horario": "14:00",
-                "duracao_minutos": 75,
+                "sala": "02",
+                "horario": "09:00",
+                "duracao_minutos": 60,
                 "id_profissional": "011-K",
                 "nome_profissional": "Dra. Yasmin Melo",
-                "horario_inicio": "14:00",
-                "horario_fim": "15:15",
-                "acrescimo_minutos": 15,
-                "valor_unitario": 38.0,
+                "horario_inicio": "09:00",
+                "horario_fim": "10:00",
+                "acrescimo_minutos": 0,
+                "valor_unitario": 30.0,
                 "forma_pagamento": "antecipado",
                 "status": "Pendente"
             }

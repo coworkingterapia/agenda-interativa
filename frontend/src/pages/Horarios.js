@@ -13,7 +13,9 @@ export default function Horarios() {
   const [horarioSelecionado, setHorarioSelecionado] = useState(null);
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [showErrorPopup, setShowErrorPopup] = useState(false);
+  const [showExpedienteEncerradoPopup, setShowExpedienteEncerradoPopup] = useState(false);
   const [acrescimoMinutos] = useState(0);
+  const [todosHorariosDesabilitados, setTodosHorariosDesabilitados] = useState(false);
 
   useEffect(() => {
     const profissionalNome = sessionStorage.getItem('profissionalNome');

@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Testar a integração completa com Google Calendar na aplicação 'Agenda Interativa': 1) Criação de reserva + sincronização Google Calendar, 2) Verificação da reserva no DB, 3) Cancelamento + remoção do Google Calendar, 4) Validação de credenciais."
+user_problem_statement: "Testar a atualização do texto no popup de 'Confirmação de Agendamento' na aplicação 'Agenda Interativa'. O texto foi atualizado para remover referências ao WhatsApp e agora deve mencionar 'Meu Histórico' e 'ID Profissional'. Fluxo: Login com ID 011-K → Calendário → Horários → Acréscimo → Consultório → Recorrência → Pagamento → Resumo → Clicar 'Ok, reservar' → Verificar novo texto do popup."
 
 backend:
   - task: "Professional ID Validation API"

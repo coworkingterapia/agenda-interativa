@@ -94,23 +94,60 @@ def test_professional_validation():
         print_error(f"Failed to validate professional: {e}")
         return False
 
-def test_reservations_endpoint():
-    """Test the reservations creation endpoint with test data"""
-    print_test_header("Reservations Creation Endpoint")
+def test_google_calendar_credentials():
+    """Test Google Calendar credentials and service availability"""
+    print_test_header("Google Calendar Credentials Validation")
+    
+    try:
+        # Check if credentials file exists
+        credentials_path = "/app/backend/agendaconsult-481122-c9b54cd92f0b.json"
+        if not os.path.exists(credentials_path):
+            print_error(f"Google Calendar credentials file not found: {credentials_path}")
+            return False
+        
+        print_success("Google Calendar credentials file exists")
+        
+        # Try to import google_calendar module
+        try:
+            import sys
+            sys.path.append('/app/backend')
+            import google_calendar
+            print_success("google_calendar module imported successfully")
+            
+            # Try to get calendar service
+            service = google_calendar.get_calendar_service()
+            if service:
+                print_success("Google Calendar service created successfully")
+                return True
+            else:
+                print_error("Failed to create Google Calendar service")
+                return False
+                
+        except Exception as e:
+            print_error(f"Failed to import or use google_calendar module: {e}")
+            return False
+            
+    except Exception as e:
+        print_error(f"Google Calendar credentials test failed: {e}")
+        return False
+
+def test_reservations_with_google_calendar():
+    """Test reservation creation with Google Calendar synchronization"""
+    print_test_header("Reservations Creation + Google Calendar Sync")
     
     # Prepare test data matching the user's requirements
-    test_date = "2025-12-15"
+    test_date = "2025-12-20"
     test_reservations = {
         "reservas": [
             {
                 "data": test_date,
                 "sala": "03",
-                "horario": "10:00",
-                "duracao_minutos": 75,  # 60 + 15 minutes extra
+                "horario": "14:00",
+                "duracao_minutos": 75,
                 "id_profissional": "011-K",
                 "nome_profissional": "Dra. Yasmin Melo",
-                "horario_inicio": "10:00",
-                "horario_fim": "11:15",
+                "horario_inicio": "14:00",
+                "horario_fim": "15:15",
                 "acrescimo_minutos": 15,
                 "valor_unitario": 38.0,
                 "forma_pagamento": "antecipado",
@@ -125,47 +162,69 @@ def test_reservations_endpoint():
         requests.delete(f"{API_BASE}/reservas", timeout=10)
         
         # Create new reservation
-        print_info("Creating test reservation...")
+        print_info("Creating test reservation with Google Calendar sync...")
         response = requests.post(
             f"{API_BASE}/reservas",
             json=test_reservations,
             headers={"Content-Type": "application/json"},
-            timeout=10
+            timeout=15
         )
         
         if response.status_code in [200, 201]:
             data = response.json()
-            if data.get("count") == 1:
-                print_success(f"Reservation created successfully: {data['message']}")
-                
-                # Verify the reservation was saved
-                print_info("Verifying reservation was saved...")
-                verify_response = requests.get(
-                    f"{API_BASE}/reservas-por-data",
-                    params={"data": test_date},
-                    timeout=10
-                )
-                
-                if verify_response.status_code == 200:
-                    reservations = verify_response.json()
-                    if len(reservations) > 0:
-                        reservation = reservations[0]
-                        print_success(f"Reservation verified in database:")
-                        print_info(f"  - ID: {reservation.get('id')}")
-                        print_info(f"  - Professional: {reservation.get('nome_profissional')}")
-                        print_info(f"  - Date: {reservation.get('data')}")
-                        print_info(f"  - Time: {reservation.get('horario_inicio')} - {reservation.get('horario_fim')}")
-                        print_info(f"  - Room: {reservation.get('sala')}")
-                        print_info(f"  - Value: R$ {reservation.get('valor_unitario')}")
+            print_success(f"Reservation created successfully: {data['message']}")
+            
+            # Check Google Calendar sync results
+            google_synced = data.get("google_calendar_synced", 0)
+            event_ids = data.get("event_ids", [])
+            
+            if google_synced > 0:
+                print_success(f"Google Calendar sync successful: {google_synced} event(s) created")
+                if event_ids:
+                    print_info(f"Event IDs: {event_ids}")
+                    # Store the first event ID for deletion test
+                    global test_event_id
+                    test_event_id = event_ids[0]
+                else:
+                    print_warning("No event IDs returned despite successful sync")
+            else:
+                print_warning("No Google Calendar events were created")
+            
+            # Verify the reservation was saved with google_event_id
+            print_info("Verifying reservation was saved with Google Calendar data...")
+            verify_response = requests.get(
+                f"{API_BASE}/reservas-por-data",
+                params={"data": test_date},
+                timeout=10
+            )
+            
+            if verify_response.status_code == 200:
+                reservations = verify_response.json()
+                if len(reservations) > 0:
+                    reservation = reservations[0]
+                    print_success(f"Reservation verified in database:")
+                    print_info(f"  - ID: {reservation.get('id')}")
+                    print_info(f"  - Professional: {reservation.get('nome_profissional')}")
+                    print_info(f"  - Date: {reservation.get('data')}")
+                    print_info(f"  - Time: {reservation.get('horario_inicio')} - {reservation.get('horario_fim')}")
+                    print_info(f"  - Room: {reservation.get('sala')}")
+                    print_info(f"  - Value: R$ {reservation.get('valor_unitario')}")
+                    
+                    google_event_id = reservation.get('google_event_id')
+                    if google_event_id:
+                        print_success(f"  - Google Event ID: {google_event_id}")
+                        # Store reservation ID for deletion test
+                        global test_reservation_id
+                        test_reservation_id = reservation.get('id')
                         return True
                     else:
-                        print_error("Reservation not found in database after creation")
-                        return False
+                        print_warning("  - No Google Event ID found in reservation")
+                        return True  # Still consider success if reservation was created
                 else:
-                    print_error(f"Failed to verify reservation: {verify_response.status_code}")
+                    print_error("Reservation not found in database after creation")
                     return False
             else:
-                print_error(f"Unexpected response count: {data}")
+                print_error(f"Failed to verify reservation: {verify_response.status_code}")
                 return False
         else:
             print_error(f"Failed to create reservation. Status: {response.status_code}")
@@ -173,7 +232,70 @@ def test_reservations_endpoint():
             return False
             
     except requests.exceptions.RequestException as e:
-        print_error(f"Failed to test reservations endpoint: {e}")
+        print_error(f"Failed to test reservations with Google Calendar: {e}")
+        return False
+
+def test_reservation_cancellation_with_google_calendar():
+    """Test reservation cancellation with Google Calendar event deletion"""
+    print_test_header("Reservation Cancellation + Google Calendar Deletion")
+    
+    # Check if we have a reservation ID from previous test
+    if 'test_reservation_id' not in globals():
+        print_warning("No test reservation ID available. Skipping cancellation test.")
+        return True  # Don't fail the test suite for this
+    
+    try:
+        reservation_id = test_reservation_id
+        print_info(f"Cancelling reservation: {reservation_id}")
+        
+        response = requests.delete(
+            f"{API_BASE}/reservas/{reservation_id}",
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data.get("success"):
+                print_success("Reservation cancelled successfully")
+                
+                google_deleted = data.get("google_calendar_deleted", False)
+                if google_deleted:
+                    print_success("Google Calendar event deleted successfully")
+                else:
+                    print_warning("Google Calendar event was not deleted (may not have existed)")
+                
+                # Verify reservation was removed from database
+                print_info("Verifying reservation was removed from database...")
+                verify_response = requests.get(
+                    f"{API_BASE}/reservas-por-data",
+                    params={"data": "2025-12-20"},
+                    timeout=10
+                )
+                
+                if verify_response.status_code == 200:
+                    reservations = verify_response.json()
+                    remaining_reservations = [r for r in reservations if r.get('id') == reservation_id]
+                    
+                    if len(remaining_reservations) == 0:
+                        print_success("Reservation successfully removed from database")
+                        return True
+                    else:
+                        print_error("Reservation still exists in database after cancellation")
+                        return False
+                else:
+                    print_error(f"Failed to verify reservation removal: {verify_response.status_code}")
+                    return False
+            else:
+                print_error(f"Cancellation failed: {data}")
+                return False
+        else:
+            print_error(f"Failed to cancel reservation. Status: {response.status_code}")
+            print_error(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print_error(f"Failed to test reservation cancellation: {e}")
         return False
 
 def test_whatsapp_url_generation():

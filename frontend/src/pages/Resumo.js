@@ -46,50 +46,75 @@ export default function Resumo() {
   const [valorFinal, setValorFinal] = useState(0);
 
   useEffect(() => {
-    const profissionalNome = sessionStorage.getItem('profissionalNome');
-    const profissionalStatus = sessionStorage.getItem('profissionalStatus');
-    const idProfissional = sessionStorage.getItem('idProfissional');
-    const selectedDate = sessionStorage.getItem('selectedDate');
-    const horario = sessionStorage.getItem('horarioSelecionado');
-    const sala = sessionStorage.getItem('salaSelecionada');
-    
-    if (!profissionalNome || !selectedDate || !horario || !sala) {
-      navigate('/');
-      return;
-    }
+    const carregarDados = async () => {
+      const profissionalNome = sessionStorage.getItem('profissionalNome');
+      const profissionalStatus = sessionStorage.getItem('profissionalStatus');
+      const idProfissional = sessionStorage.getItem('idProfissional');
+      const selectedDate = sessionStorage.getItem('selectedDate');
+      const horario = sessionStorage.getItem('horarioSelecionado');
+      const sala = sessionStorage.getItem('salaSelecionada');
+      
+      if (!profissionalNome || !selectedDate || !horario || !sala) {
+        navigate('/');
+        return;
+      }
 
-    const acrescimoMinutos = parseInt(sessionStorage.getItem('acrescimoMinutos') || '0');
-    const semanasRecorrentes = parseInt(sessionStorage.getItem('semanasRecorrentes') || '0');
-    const valorTotalFinal = parseFloat(sessionStorage.getItem('valorTotalFinal') || '0');
-    const valorFinalComPagamento = parseFloat(sessionStorage.getItem('valorFinalComPagamento') || '0');
-    const totalAgendamentos = parseInt(sessionStorage.getItem('totalAgendamentos') || '1');
-    const datasRecorrentes = JSON.parse(sessionStorage.getItem('datasRecorrentes') || '[]');
-    const formaPagamento = sessionStorage.getItem('formaPagamento') || 'antecipado';
+      const acrescimoMinutos = parseInt(sessionStorage.getItem('acrescimoMinutos') || '0');
+      const semanasRecorrentes = parseInt(sessionStorage.getItem('semanasRecorrentes') || '0');
+      const valorTotalFinal = parseFloat(sessionStorage.getItem('valorTotalFinal') || '0');
+      const valorFinalComPagamento = parseFloat(sessionStorage.getItem('valorFinalComPagamento') || '0');
+      const totalAgendamentos = parseInt(sessionStorage.getItem('totalAgendamentos') || '1');
+      const datasRecorrentes = JSON.parse(sessionStorage.getItem('datasRecorrentes') || '[]');
+      const formaPagamento = sessionStorage.getItem('formaPagamento') || 'antecipado';
 
-    let valorAcrescimo = 0;
-    if (acrescimoMinutos === 15) valorAcrescimo = 8;
-    else if (acrescimoMinutos === 30) valorAcrescimo = 15;
+      let valorAcrescimo = 0;
+      if (acrescimoMinutos === 15) valorAcrescimo = 8;
+      else if (acrescimoMinutos === 30) valorAcrescimo = 15;
 
-    const valorUnitario = 30 + valorAcrescimo;
-    const adicionalPagamento = valorFinalComPagamento - valorTotalFinal;
+      const valorUnitario = 30 + valorAcrescimo;
+      const adicionalPagamento = valorFinalComPagamento - valorTotalFinal;
 
-    setDadosResumo({
-      profissionalNome,
-      profissionalStatus,
-      idProfissional,
-      data: new Date(selectedDate),
-      horario,
-      sala,
-      acrescimoMinutos,
-      valorAcrescimo,
-      semanasRecorrentes,
-      valorUnitario,
-      totalAgendamentos,
-      datasRecorrentes,
-      formaPagamento,
-      adicionalPagamento,
-      valorTotal: valorFinalComPagamento
-    });
+      try {
+        const response = await fetch(`${API}/creditos/${idProfissional}`);
+        const data = await response.json();
+        const creditoDisponivel = data.creditos || 0;
+        setCreditos(creditoDisponivel);
+
+        const valorOriginalTotal = valorFinalComPagamento;
+        const creditoAUsar = Math.min(creditoDisponivel, valorOriginalTotal);
+        const valorFinalCalculado = Math.max(0, valorOriginalTotal - creditoAUsar);
+
+        setValorOriginal(valorOriginalTotal);
+        setCreditoUtilizado(creditoAUsar);
+        setValorFinal(valorFinalCalculado);
+      } catch (error) {
+        console.error('Erro ao buscar créditos:', error);
+        setCreditos(0);
+        setValorOriginal(valorFinalComPagamento);
+        setCreditoUtilizado(0);
+        setValorFinal(valorFinalComPagamento);
+      }
+
+      setDadosResumo({
+        profissionalNome,
+        profissionalStatus,
+        idProfissional,
+        data: new Date(selectedDate),
+        horario,
+        sala,
+        acrescimoMinutos,
+        valorAcrescimo,
+        semanasRecorrentes,
+        valorUnitario,
+        totalAgendamentos,
+        datasRecorrentes,
+        formaPagamento,
+        adicionalPagamento,
+        valorTotal: valorFinalComPagamento
+      });
+    };
+
+    carregarDados();
   }, [navigate]);
 
   const formatarData = (data) => {

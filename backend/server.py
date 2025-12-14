@@ -318,6 +318,53 @@ async def desmarcar_reserva(reserva_id: str):
         raise
     except Exception as e:
         logging.error(f"Erro ao cancelar reserva: {e}")
+
+@api_router.get("/creditos/{id_profissional}")
+async def get_creditos(id_profissional: str):
+    """
+    Retorna o saldo de créditos de um profissional
+    """
+    profissional = await db.profissionais.find_one(
+        {"id_profissional": id_profissional},
+        {"_id": 0}
+    )
+    
+    if not profissional:
+        return {"creditos": 0.0}
+    
+    return {"creditos": profissional.get('creditos', 0.0)}
+
+@api_router.post("/creditos/{id_profissional}/usar")
+async def usar_credito(id_profissional: str, valor_usar: float):
+    """
+    Usa crédito de um profissional
+    """
+    profissional = await db.profissionais.find_one(
+        {"id_profissional": id_profissional},
+        {"_id": 0}
+    )
+    
+    if not profissional:
+        raise HTTPException(status_code=404, detail="Profissional não encontrado")
+    
+    credito_atual = profissional.get('creditos', 0.0)
+    
+    if valor_usar > credito_atual:
+        raise HTTPException(status_code=400, detail="Crédito insuficiente")
+    
+    novo_credito = credito_atual - valor_usar
+    
+    await db.profissionais.update_one(
+        {"id_profissional": id_profissional},
+        {"$set": {"creditos": novo_credito}}
+    )
+    
+    return {
+        "success": True,
+        "credito_usado": valor_usar,
+        "credito_restante": novo_credito
+    }
+
         raise HTTPException(status_code=500, detail=str(e))
 
 

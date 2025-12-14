@@ -30,6 +30,25 @@ export default function Horarios() {
     setDataSelecionada(date);
   }, [navigate]);
 
+  useEffect(() => {
+    if (todosHorariosDesabilitados) {
+      const timer = setTimeout(() => {
+        setShowExpedienteEncerradoPopup(true);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [todosHorariosDesabilitados]);
+
+  const handleTodosHorariosDesabilitados = (todosDesabilitados) => {
+    setTodosHorariosDesabilitados(todosDesabilitados);
+  };
+
+  const handleVoltarParaCalendario = () => {
+    setShowExpedienteEncerradoPopup(false);
+    navigate('/calendario');
+  };
+
   const handleSelectHorario = (horario, temConflito) => {
     setHorarioSelecionado(horario);
     

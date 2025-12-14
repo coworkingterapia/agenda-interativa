@@ -157,6 +157,8 @@ async def create_reservas(request: ReservasCreateRequest):
         google_calendar_disponivel = False
     
     hoje = dt_date.today()
+    agora = datetime.now(timezone.utc)
+    agora_brasilia = agora - timedelta(hours=3)
     
     for reserva_data in request.reservas:
         try:
@@ -167,6 +169,21 @@ async def create_reservas(request: ReservasCreateRequest):
                     status_code=400,
                     detail=f"Data retroativa não permitida: {reserva_data.data}. Não é possível fazer reservas para datas passadas."
                 )
+            
+            if data_reserva == hoje and reserva_data.horario_inicio:
+                try:
+                    hora, minuto = map(int, reserva_data.horario_inicio.split(':'))
+                    horario_reserva_minutos = hora * 60 + minuto
+                    horario_atual_minutos = agora_brasilia.hour * 60 + agora_brasilia.minute
+                    
+                    if horario_reserva_minutos <= horario_atual_minutos:
+                        raise HTTPException(
+                            status_code=400,
+                            detail=f"Horário retroativo não permitido: {reserva_data.horario_inicio}. São {agora_brasilia.strftime('%H:%M')} agora."
+                        )
+                except ValueError:
+                    pass
+                    
         except ValueError:
             raise HTTPException(
                 status_code=400,

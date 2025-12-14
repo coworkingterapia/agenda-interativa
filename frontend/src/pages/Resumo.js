@@ -453,7 +453,7 @@ Link de pagamento: *${linkPagamento || 'A ser fornecido'}*`;
 
         {/* Texto de Aviso */}
         <p className="text-center text-sm text-slate-500 mb-6">
-          A reserva só terá validade após confirmação do pagamento pelo WhatsApp
+          A reserva será salva e você poderá consultá-la em "Meu Histórico"
         </p>
 
         {/* Botões de Ação */}

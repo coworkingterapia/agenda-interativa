@@ -247,10 +247,10 @@ async def seed_reservas():
     await db.reservas.delete_many({})
     return {"message": "Reservas de teste removidas com sucesso"}
 
-@api_router.delete("/reservas/{reserva_id}")
-async def cancelar_reserva(reserva_id: str):
+@api_router.post("/reservas/{reserva_id}/desmarcar")
+async def desmarcar_reserva(reserva_id: str):
     """
-    Cancela uma reserva específica e remove do Google Calendar
+    Desmarca uma reserva (não deleta, apenas desativa) e gera crédito se foi paga
     """
     try:
         reserva = await db.reservas.find_one({"id": reserva_id}, {"_id": 0})
@@ -258,8 +258,32 @@ async def cancelar_reserva(reserva_id: str):
         if not reserva:
             raise HTTPException(status_code=404, detail="Reserva não encontrada")
         
-        google_event_id = reserva.get('google_event_id')
+        agora = datetime.now(timezone.utc)
+        agora_brasilia = agora - timedelta(hours=3)
+        data_cancelamento = agora_brasilia.strftime('%d/%m/%Y')
+        hora_cancelamento = agora_brasilia.strftime('%H:%M')
         
+        credito_gerado = 0.0
+        status_pagamento = reserva.get('status', 'Pendente')
+        
+        if status_pagamento == 'Pago':
+            credito_gerado = reserva.get('valor_unitario', 0.0)
+            
+            profissional = await db.profissionais.find_one(
+                {"id_profissional": reserva['id_profissional']},
+                {"_id": 0}
+            )
+            
+            if profissional:
+                credito_atual = profissional.get('creditos', 0.0)
+                novo_credito = credito_atual + credito_gerado
+                
+                await db.profissionais.update_one(
+                    {"id_profissional": reserva['id_profissional']},
+                    {"$set": {"creditos": novo_credito}}
+                )
+        
+        google_event_id = reserva.get('google_event_id')
         if google_event_id:
             try:
                 import google_calendar
@@ -272,11 +296,21 @@ async def cancelar_reserva(reserva_id: str):
             except Exception as e:
                 logging.error(f"Erro ao deletar evento do Google Calendar: {e}")
         
-        result = await db.reservas.delete_one({"id": reserva_id})
+        await db.reservas.update_one(
+            {"id": reserva_id},
+            {"$set": {
+                "status_reserva": "cancelado",
+                "data_cancelamento": data_cancelamento,
+                "hora_cancelamento": hora_cancelamento
+            }}
+        )
         
         return {
             "success": True,
-            "message": "Reserva cancelada com sucesso",
+            "message": "Reserva desmarcada com sucesso",
+            "credito_gerado": credito_gerado,
+            "data_cancelamento": data_cancelamento,
+            "hora_cancelamento": hora_cancelamento,
             "google_calendar_deleted": bool(google_event_id)
         }
         

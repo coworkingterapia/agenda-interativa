@@ -503,10 +503,7 @@ Link de pagamento: *${linkPagamento || 'A ser fornecido'}*`;
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base text-slate-600 space-y-4 pt-4">
               <p>
-                Agradecemos por agendar seus atendimentos conosco! Assim que você clicar em <strong>[Enviar]</strong>, este aplicativo irá direcionar para o WhatsApp, a fim de concluir sua reserva e dispor do link de pagamento.
-              </p>
-              <p>
-                Não altere a mensagem, apenas confira e envie-nos em seguida. Se precisar acrescentar ou comentar algo, faça isso após enviar este Resumo de Agendamento.
+                Agradecemos por agendar com a gente! Assim que clicar em "Enviar", poderá conferir no botão "Meu Histórico", assim que efetuar o login com sua ID Profissional. Lá estarão todos os seus agendamentos realizados.
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>

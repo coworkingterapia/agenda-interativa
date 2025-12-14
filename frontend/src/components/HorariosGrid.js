@@ -169,15 +169,19 @@ export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, on
     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
       {todosHorarios.map((horario) => {
         const bloqueado = horariosBloqueados.has(horario);
+        const jaPassou = horarioJaPassou(horario, dataSelecionada);
 
         return (
           <button
             key={horario}
             onClick={() => handleHorarioClick(horario)}
-            disabled={bloqueado}
+            disabled={bloqueado || jaPassou}
+            title={jaPassou ? '⚠️ Horário já passou - não permitido' : ''}
             className={`
               py-3 px-4 rounded-xl font-semibold text-base transition-all
-              ${bloqueado
+              ${jaPassou
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-2 border-gray-400 opacity-50 line-through'
+                : bloqueado
                 ? 'bg-pink-100 text-pink-400 cursor-not-allowed border-2 border-pink-200'
                 : 'bg-white text-slate-800 hover:bg-blue-100 hover:scale-105 cursor-pointer border-2 border-slate-300 hover:border-blue-400'
               }

@@ -226,16 +226,23 @@ export default function Resumo() {
 
   const handleConfirmarReserva = async () => {
     try {
-      await salvarReservasNoBanco();
+      const resultado = await salvarReservasNoBanco();
       
-      setShowOrientacaoPopup(false);
-      
-      alert('✅ Reserva confirmada com sucesso!\n\nVocê pode consultar seus agendamentos em "Meu Histórico" na tela inicial.');
-      
-      sessionStorage.clear();
-      navigate('/');
+      if (resultado.success) {
+        setShowOrientacaoPopup(false);
+        
+        alert('✅ Reserva confirmada com sucesso!\n\nVocê pode consultar seus agendamentos em "Meu Histórico" na tela inicial.');
+        
+        sessionStorage.clear();
+        navigate('/');
+      } else {
+        setShowOrientacaoPopup(false);
+        
+        alert(`❌ Erro ao confirmar reserva:\n\n${resultado.error}\n\nPor favor, verifique os dados e tente novamente.`);
+      }
     } catch (error) {
       console.error('Erro ao confirmar reserva:', error);
+      setShowOrientacaoPopup(false);
       alert('❌ Erro ao confirmar reserva. Por favor, tente novamente.');
     }
   };

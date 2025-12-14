@@ -170,7 +170,7 @@ export default function Home() {
 
   const handleButtonClick = (buttonName) => {
     if (noID) {
-      redirectToWhatsApp();
+      showIDNotFoundMessage();
     } else if (buttonName === "Reservar") {
       navigate('/calendario');
     } else {

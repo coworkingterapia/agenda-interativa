@@ -395,34 +395,68 @@ export default function Home() {
                     key={item.id || index}
                     className={`border-2 rounded-xl p-4 transition-all ${getStatusCor(item)}`}
                   >
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-lg font-bold text-slate-800">
-                            📅 {formatarData(item.data)}
+                    <div className="flex flex-col gap-4">
+                      {/* Header com status */}
+                      <div className="flex items-center gap-2">
+                        {/* Bolinha de status de pagamento */}
+                        <span 
+                          className={`w-4 h-4 rounded-full ${
+                            item.status_pagamento === 'pago' ? 'bg-green-500' : 'bg-gray-400'
+                          }`}
+                          title={item.status_pagamento === 'pago' ? 'Pago' : 'Aguardando Pagamento'}
+                        ></span>
+                        <span className="text-lg font-bold text-slate-800">
+                          📅 {formatarData(item.data)}
+                        </span>
+                        {item.status === 'cancelado' && (
+                          <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+                            CANCELADO
                           </span>
-                          {item.status === 'cancelado' && (
-                            <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
-                              CANCELADO
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-slate-700 space-y-1">
-                          <p>🕐 Horário: <strong>{item.horario}</strong></p>
-                          <p>🏠 Sala: <strong>{item.sala}</strong></p>
-                          {item.recorrencia > 0 && (
-                            <p>🔄 Recorrência: <strong>{item.recorrencia} semana(s)</strong></p>
-                          )}
-                        </div>
+                        )}
                       </div>
-                      
+
+                      {/* Informações da reserva */}
+                      <div className="text-slate-700 space-y-1">
+                        <p>🕐 Horário: <strong>{item.horario}</strong></p>
+                        <p>🏠 Sala: <strong>{item.sala}</strong></p>
+                        {item.recorrencia > 0 && (
+                          <p>🔄 Recorrência: <strong>{item.recorrencia} semana(s)</strong></p>
+                        )}
+                        {item.valor_total && (
+                          <p>💰 Valor: <strong>R$ {item.valor_total.toFixed(2).replace('.', ',')}</strong></p>
+                        )}
+                      </div>
+
+                      {/* Link de Pagamento */}
+                      {item.link_pagamento && item.status !== 'cancelado' && (
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                          <p className="text-sm font-semibold text-green-800 mb-2">🔗 Link de Pagamento:</p>
+                          <a 
+                            href={item.link_pagamento}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 underline text-sm break-all"
+                          >
+                            {item.link_pagamento}
+                          </a>
+                        </div>
+                      )}
+
+                      {/* Botão Cancelar */}
                       {item.status !== 'cancelado' && (
                         <button
                           onClick={() => cancelarAgendamento(item.id)}
-                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all"
+                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all self-start"
                         >
                           Cancelar
                         </button>
+                      )}
+
+                      {/* Data/Hora de Criação no rodapé */}
+                      {item.data_criacao && (
+                        <div className="text-xs text-slate-400 border-t border-slate-200 pt-2 mt-2">
+                          Criado em: {item.data_criacao}
+                        </div>
                       )}
                     </div>
                   </div>

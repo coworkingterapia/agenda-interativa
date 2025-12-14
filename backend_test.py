@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 import urllib.parse
 
 # Get backend URL from environment
-BACKEND_URL = "https://agendaconsult.preview.emergentagent.com"
+BACKEND_URL = "https://proagenda-4.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class Colors:
@@ -279,7 +279,7 @@ def test_cors_configuration():
         response = requests.options(
             f"{API_BASE}/reservas",
             headers={
-                "Origin": "https://agendaconsult.preview.emergentagent.com",
+                "Origin": "https://proagenda-4.preview.emergentagent.com",
                 "Access-Control-Request-Method": "POST",
                 "Access-Control-Request-Headers": "Content-Type"
             },

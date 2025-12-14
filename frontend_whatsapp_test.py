@@ -13,8 +13,8 @@ import urllib.parse
 import time
 
 # Configuration
-FRONTEND_URL = "https://agendaconsult.preview.emergentagent.com"
-BACKEND_URL = "https://agendaconsult.preview.emergentagent.com"
+FRONTEND_URL = "https://proagenda-4.preview.emergentagent.com"
+BACKEND_URL = "https://proagenda-4.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class Colors:

@@ -16,8 +16,8 @@ import urllib.parse
 import time
 
 # Configuration
-FRONTEND_URL = "https://agendaconsult.preview.emergentagent.com"
-BACKEND_URL = "https://agendaconsult.preview.emergentagent.com"
+FRONTEND_URL = "https://proagenda-4.preview.emergentagent.com"
+BACKEND_URL = "https://proagenda-4.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class Colors:
@@ -108,7 +108,7 @@ def test_step_2_navigate_to_resumo():
     """Step 2: Test navigation to /resumo URL"""
     print_test_header("STEP 2: TESTAR NAVEGAÇÃO ATÉ CARD 8")
     
-    print_info("Testing URL: https://agendaconsult.preview.emergentagent.com/resumo")
+    print_info("Testing URL: https://proagenda-4.preview.emergentagent.com/resumo")
     
     try:
         response = requests.get(f"{FRONTEND_URL}/resumo", timeout=10)

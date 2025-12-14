@@ -200,7 +200,7 @@ frontend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "Resumo page (CARD 8) is accessible at https://agendaconsult.preview.emergentagent.com/resumo and loads correctly."
+          comment: "Resumo page (CARD 8) is accessible at https://proagenda-4.preview.emergentagent.com/resumo and loads correctly."
 
   - task: "Ok Reservar Button Flow"
     implemented: true

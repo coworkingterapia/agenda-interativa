@@ -222,58 +222,20 @@ export default function Resumo() {
     setShowOrientacaoPopup(true);
   };
 
-  const handleEnviarWhatsApp = async () => {
-    await salvarReservasNoBanco();
-
-    const linkPagamento = obterLinkPagamento();
-    const primeiraData = new Date(dadosResumo.datasRecorrentes[0]);
-    const dataExtenso = formatarDataPorExtenso(primeiraData);
-    const diaSemana = getDiaSemanaPorExtenso(dadosResumo.datasRecorrentes[0]);
-    const datasRecorrentes = formatarDatasRecorrentesParaWhatsApp();
-    
-    const textoResumo = `*Informacoes Pessoais*
-
-ID Profissional: *${dadosResumo.idProfissional}*
-Nome: *${dadosResumo.profissionalStatus} ${dadosResumo.profissionalNome}*
-
-Informacoes do Agendamento
-Data: *${dataExtenso}*
-Dia: *${diaSemana}*
-Horario: *${dadosResumo.horario}*
-Consultorio: *${getSalaDescricao(dadosResumo.sala)}*
-
-Tempo e Valores
-Acrescimo de tempo: *${dadosResumo.acrescimoMinutos > 0 ? `+${dadosResumo.acrescimoMinutos} minutos` : 'Sem acrescimo'}*
-Valor acrescimo: *R$ ${dadosResumo.valorAcrescimo.toFixed(2).replace('.', ',')}*
-
-Recorrencia
-Atendimento recorrente: *${dadosResumo.semanasRecorrentes > 0 ? `${dadosResumo.semanasRecorrentes} ${dadosResumo.semanasRecorrentes === 1 ? 'semana' : 'semanas'}` : 'Sem recorrencia'}*
-Valor unitario: *R$ ${dadosResumo.valorUnitario.toFixed(2).replace('.', ',')}*
-Quantidade de atendimentos: *${dadosResumo.totalAgendamentos} ${dadosResumo.totalAgendamentos === 1 ? 'atendimento' : 'atendimentos'}*
-Datas dos atendimentos:
-${datasRecorrentes}
-
-Pagamento
-Forma de pagamento: *${dadosResumo.formaPagamento === 'antecipado' ? 'Antecipado (pre)' : 'No dia (pos)'}*
-Adicional pagamento: *R$ ${dadosResumo.adicionalPagamento.toFixed(2).replace('.', ',')}*
-Valor total: *R$ ${dadosResumo.valorTotal.toFixed(2).replace('.', ',')}*
-
-Link de pagamento: *${linkPagamento || 'A ser fornecido'}*`;
-
-    const telefone = '5561996082572';
-    const mensagemCodificada = encodeURIComponent(textoResumo);
-    const whatsappUrl = `https://wa.me/${telefone}?text=${mensagemCodificada}`;
-    
-    const link = document.createElement('a');
-    link.href = whatsappUrl;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    setShowOrientacaoPopup(false);
+  const handleConfirmarReserva = async () => {
+    try {
+      await salvarReservasNoBanco();
+      
+      setShowOrientacaoPopup(false);
+      
+      alert('✅ Reserva confirmada com sucesso!\n\nVocê pode consultar seus agendamentos em "Meu Histórico" na tela inicial.');
+      
+      sessionStorage.clear();
+      navigate('/');
+    } catch (error) {
+      console.error('Erro ao confirmar reserva:', error);
+      alert('❌ Erro ao confirmar reserva. Por favor, tente novamente.');
+    }
   };
 
   const handleReiniciar = () => {

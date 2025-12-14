@@ -423,15 +423,17 @@ def run_comprehensive_test():
     """Run all tests and provide summary"""
     print(f"{Colors.BOLD}{Colors.BLUE}")
     print("=" * 80)
-    print("AGENDA INTERATIVA - WHATSAPP INTEGRATION TEST SUITE")
+    print("AGENDA INTERATIVA - GOOGLE CALENDAR INTEGRATION TEST SUITE")
     print("=" * 80)
     print(f"{Colors.ENDC}")
     
     tests = [
         ("Backend Health Check", test_backend_health),
         ("Professional Validation", test_professional_validation),
-        ("Reservations Endpoint", test_reservations_endpoint),
-        ("WhatsApp URL Generation", test_whatsapp_url_generation),
+        ("Google Calendar Credentials", test_google_calendar_credentials),
+        ("Reservations + Google Calendar Sync", test_reservations_with_google_calendar),
+        ("Reservations by Date Endpoint", test_reservations_by_date_endpoint),
+        ("Reservation Cancellation + Google Calendar Deletion", test_reservation_cancellation_with_google_calendar),
         ("CORS Configuration", test_cors_configuration),
         ("Error Handling", test_error_handling)
     ]
@@ -464,10 +466,10 @@ def run_comprehensive_test():
     print(f"\n{Colors.BOLD}Results: {passed}/{total} tests passed{Colors.ENDC}")
     
     if passed == total:
-        print_success("🎉 All tests passed! WhatsApp integration should be working correctly.")
+        print_success("🎉 All tests passed! Google Calendar integration should be working correctly.")
         return True
     else:
-        print_error(f"❌ {total - passed} test(s) failed. WhatsApp integration may have issues.")
+        print_error(f"❌ {total - passed} test(s) failed. Google Calendar integration may have issues.")
         return False
 
 if __name__ == "__main__":

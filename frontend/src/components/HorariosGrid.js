@@ -60,6 +60,9 @@ export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, on
   const [reservas, setReservas] = useState([]);
   const [horariosBloqueados, setHorariosBloqueados] = useState(new Set());
   const [loading, setLoading] = useState(true);
+  
+  // Gerar todos os horários disponíveis uma vez
+  const todosHorarios = gerarHorarios();
 
   const carregarReservas = useCallback(async () => {
     if (!dataSelecionada) return;

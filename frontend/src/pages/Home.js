@@ -164,12 +164,8 @@ export default function Home() {
     });
   };
 
-  const redirectToWhatsApp = () => {
-    const phone = "5561996082572";
-    const message = encodeURIComponent(
-      "Olá, minha ID Profissional não está validando ou ainda não tenho, gostaria que olhasse isso para mim."
-    );
-    window.location.href = `https://wa.me/${phone}?text=${message}`;
+  const showIDNotFoundMessage = () => {
+    alert('❌ ID Profissional não encontrada\n\nSe você não possui uma ID ou está com problemas para validar, entre em contato com o administrador do sistema.');
   };
 
   const handleButtonClick = (buttonName) => {

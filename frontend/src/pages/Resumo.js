@@ -477,10 +477,10 @@ export default function Resumo() {
               Cancelar
             </Button>
             <Button
-              onClick={handleEnviarWhatsApp}
+              onClick={handleConfirmarReserva}
               className="bg-green-600 hover:bg-green-700 text-white"
             >
-              Enviar
+              Confirmar
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

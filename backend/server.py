@@ -33,6 +33,7 @@ class Profissional(BaseModel):
     id_profissional: str
     nome: str
     status_tratamento: str
+    creditos: Optional[float] = 0.0
 
 class ValidateIDRequest(BaseModel):
     id_profissional: str

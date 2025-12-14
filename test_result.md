@@ -158,6 +158,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "API endpoint /api/reservas-por-data working correctly. Successfully retrieves reservations by date. Tested with date 2025-12-20 and correctly returned reservation data including ID, professional info, time slots, room, and value. google_event_id field is present but null due to Google Calendar sync failure."
+        - working: true
+          agent: "testing"
+          comment: "✅ CONFIRMED WORKING with Google Calendar integration. Successfully retrieves reservations with valid google_event_id field. Test with date 2025-12-21 returned reservation with google_event_id='lo46ksicn3v5etfs8k1jdhr9ho', confirming proper database storage of Google Calendar event IDs."
 
   - task: "Reservation Cancellation API"
     implemented: true

@@ -56,7 +56,7 @@ const horarioJaPassou = (horario, dataSelecionada) => {
   return minutosHorario <= minutosAgora;
 };
 
-export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, onSelectHorario }) {
+export default function HorariosGrid({ dataSelecionada, acrescimoMinutos = 0, onSelectHorario, onTodosHorariosDesabilitados }) {
   const [reservas, setReservas] = useState([]);
   const [horariosBloqueados, setHorariosBloqueados] = useState(new Set());
   const [loading, setLoading] = useState(true);

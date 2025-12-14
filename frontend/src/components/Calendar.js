@@ -264,10 +264,13 @@ export default function Calendar({ onSelectDate }) {
                 key={index}
                 onClick={() => handleDayClick(diaObj)}
                 disabled={diaObj.desabilitado}
+                title={diaObj.dataPassada ? '⚠️ Data passada - não permitida' : ''}
                 className={`
                   aspect-square rounded-xl flex flex-col items-center justify-center relative
                   transition-all font-semibold text-lg
-                  ${diaObj.desabilitado
+                  ${diaObj.dataPassada
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50 line-through'
+                    : diaObj.desabilitado
                     ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                     : 'hover:bg-blue-100 hover:scale-105 cursor-pointer'
                   }
@@ -276,7 +279,7 @@ export default function Calendar({ onSelectDate }) {
                 data-testid={`day-${diaObj.dia}`}
               >
                 <span>{diaObj.dia}</span>
-                {diaObj.hasReserva && !diaObj.desabilitado && (
+                {diaObj.hasReserva && !diaObj.desabilitado && !diaObj.dataPassada && (
                   <div className="absolute bottom-1">
                     <div className="w-2 h-2 bg-white rounded-full border border-slate-400" />
                   </div>

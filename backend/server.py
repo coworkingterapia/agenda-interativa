@@ -56,8 +56,13 @@ class Reserva(BaseModel):
     horario_fim: Optional[str] = None
     acrescimo_minutos: Optional[int] = 0
     valor_unitario: Optional[float] = 30.0
+    valor_original: Optional[float] = 30.0
+    credito_utilizado: Optional[float] = 0.0
     forma_pagamento: Optional[str] = None
     status: Optional[str] = "Pendente"
+    status_reserva: Optional[str] = "ativo"
+    data_cancelamento: Optional[str] = None
+    hora_cancelamento: Optional[str] = None
     google_event_id: Optional[str] = None
 
 class ReservaCreate(BaseModel):

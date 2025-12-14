@@ -289,36 +289,44 @@ def test_reservation_cancellation_with_google_calendar():
         if response.status_code == 200:
             data = response.json()
             
-            if data.get("success"):
-                print_success("Reservation cancelled successfully")
+            print_info(f"Response data: {json.dumps(data, indent=2)}")
+            
+            # VERIFICAR: Response: "success": true ✅
+            if data.get("success") == True:
+                print_success("✅ VERIFICADO: success = true")
+            else:
+                print_error(f"❌ FALHOU: success = {data.get('success')}, esperado = true")
+                return False
                 
-                google_deleted = data.get("google_calendar_deleted", False)
-                if google_deleted:
-                    print_success("Google Calendar event deleted successfully")
+            # VERIFICAR: Response: "google_calendar_deleted": true ✅ (IMPORTANTE: deve ser TRUE agora)
+            google_deleted = data.get("google_calendar_deleted", False)
+            if google_deleted == True:
+                print_success("✅ VERIFICADO: google_calendar_deleted = true (INTEGRAÇÃO FUNCIONANDO!)")
+            else:
+                print_error(f"❌ FALHOU: google_calendar_deleted = {google_deleted}, esperado = true")
+                return False
+                
+            # VERIFICAR: Reserva removida do banco
+            print_info("Verificando se reserva foi removida do banco...")
+            verify_response = requests.get(
+                f"{API_BASE}/reservas-por-data",
+                params={"data": "2025-12-21"},
+                timeout=10
+            )
+            
+            if verify_response.status_code == 200:
+                reservations = verify_response.json()
+                remaining_reservations = [r for r in reservations if r.get('id') == reservation_id]
+                
+                if len(remaining_reservations) == 0:
+                    print_success("✅ VERIFICADO: Reserva removida do banco")
+                    return True
                 else:
-                    print_warning("Google Calendar event was not deleted (may not have existed)")
-                
-                # Verify reservation was removed from database
-                print_info("Verifying reservation was removed from database...")
-                verify_response = requests.get(
-                    f"{API_BASE}/reservas-por-data",
-                    params={"data": "2025-12-20"},
-                    timeout=10
-                )
-                
-                if verify_response.status_code == 200:
-                    reservations = verify_response.json()
-                    remaining_reservations = [r for r in reservations if r.get('id') == reservation_id]
-                    
-                    if len(remaining_reservations) == 0:
-                        print_success("Reservation successfully removed from database")
-                        return True
-                    else:
-                        print_error("Reservation still exists in database after cancellation")
-                        return False
-                else:
-                    print_error(f"Failed to verify reservation removal: {verify_response.status_code}")
+                    print_error("❌ FALHOU: Reserva ainda existe no banco após cancelamento")
                     return False
+            else:
+                print_error(f"❌ FALHOU: Erro ao verificar remoção: {verify_response.status_code}")
+                return False
             else:
                 print_error(f"Cancellation failed: {data}")
                 return False

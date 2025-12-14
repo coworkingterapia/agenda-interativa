@@ -339,6 +339,82 @@ def test_reservation_cancellation_with_google_calendar():
         print_error(f"Failed to test reservation cancellation: {e}")
         return False
 
+def test_multiple_reservations():
+    """Test multiple reservations creation - EXACT USER REQUIREMENTS"""
+    print_test_header("TESTE 4: Múltiplas Reservas")
+    
+    # Prepare test data with 2 reservations for different dates
+    test_reservations = {
+        "reservas": [
+            {
+                "data": "2025-12-22",
+                "sala": "01",
+                "horario": "10:00",
+                "duracao_minutos": 60,
+                "id_profissional": "011-K",
+                "nome_profissional": "Dra. Yasmin Melo",
+                "horario_inicio": "10:00",
+                "horario_fim": "11:00",
+                "acrescimo_minutos": 0,
+                "valor_unitario": 30.0,
+                "forma_pagamento": "antecipado",
+                "status": "Pendente"
+            },
+            {
+                "data": "2025-12-23",
+                "sala": "02",
+                "horario": "14:00",
+                "duracao_minutos": 60,
+                "id_profissional": "011-K",
+                "nome_profissional": "Dra. Yasmin Melo",
+                "horario_inicio": "14:00",
+                "horario_fim": "15:00",
+                "acrescimo_minutos": 0,
+                "valor_unitario": 30.0,
+                "forma_pagamento": "antecipado",
+                "status": "Pendente"
+            }
+        ]
+    }
+    
+    try:
+        print_info("Criando múltiplas reservas...")
+        response = requests.post(
+            f"{API_BASE}/reservas",
+            json=test_reservations,
+            headers={"Content-Type": "application/json"},
+            timeout=15
+        )
+        
+        if response.status_code in [200, 201]:
+            data = response.json()
+            print_info(f"Response data: {json.dumps(data, indent=2)}")
+            
+            # VERIFICAR: "google_calendar_synced": 2
+            google_synced = data.get("google_calendar_synced", 0)
+            if google_synced == 2:
+                print_success(f"✅ VERIFICADO: google_calendar_synced = {google_synced}")
+            else:
+                print_error(f"❌ FALHOU: google_calendar_synced = {google_synced}, esperado = 2")
+                return False
+            
+            # VERIFICAR: Array "event_ids" com 2 IDs
+            event_ids = data.get("event_ids", [])
+            if event_ids and len(event_ids) == 2:
+                print_success(f"✅ VERIFICADO: event_ids array com {len(event_ids)} IDs: {event_ids}")
+                return True
+            else:
+                print_error(f"❌ FALHOU: event_ids array com {len(event_ids)} IDs, esperado = 2: {event_ids}")
+                return False
+        else:
+            print_error(f"❌ FALHOU: Status code {response.status_code}")
+            print_error(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print_error(f"❌ FALHOU: Erro de conexão: {e}")
+        return False
+
 def test_reservations_by_date_endpoint():
     """Test the reservations by date endpoint"""
     print_test_header("Reservations by Date Endpoint")

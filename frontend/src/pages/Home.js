@@ -368,6 +368,19 @@ export default function Home() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           
+          {/* Legenda de Status */}
+          <div className="flex items-center gap-4 text-sm bg-slate-50 p-3 rounded-lg mx-6">
+            <span className="font-semibold text-slate-700">Status de Pagamento:</span>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-green-500"></span>
+              <span className="text-slate-600">Pago</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-gray-400"></span>
+              <span className="text-slate-600">Aguardando Pagamento</span>
+            </div>
+          </div>
+          
           <div className="py-4">
             {historico.length === 0 ? (
               <div className="text-center py-12">

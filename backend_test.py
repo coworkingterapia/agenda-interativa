@@ -548,9 +548,10 @@ def run_comprehensive_test():
         ("Backend Health Check", test_backend_health),
         ("Professional Validation", test_professional_validation),
         ("Google Calendar Credentials", test_google_calendar_credentials),
-        ("Reservations + Google Calendar Sync", test_reservations_with_google_calendar),
-        ("Reservations by Date Endpoint", test_reservations_by_date_endpoint),
-        ("Reservation Cancellation + Google Calendar Deletion", test_reservation_cancellation_with_google_calendar),
+        ("TESTE 1: Criação de Reserva + Google Calendar", test_reservations_with_google_calendar),
+        ("TESTE 2: Verificação no Database", test_database_verification),
+        ("TESTE 3: Cancelamento + Google Calendar", test_reservation_cancellation_with_google_calendar),
+        ("TESTE 4: Múltiplas Reservas", test_multiple_reservations),
         ("CORS Configuration", test_cors_configuration),
         ("Error Handling", test_error_handling)
     ]

@@ -456,7 +456,7 @@ export default function Resumo() {
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base text-slate-600 space-y-4 pt-4">
               <p>
-                Agradecemos por agendar com a gente! Assim que clicar em "Enviar", poderá conferir no botão "Meu Histórico", assim que efetuar o login com sua ID Profissional. Lá estarão todos os seus agendamentos realizados.
+                Agradecemos por agendar com a gente! Assim que clicar em "Confirmar", sua reserva será salva e você poderá conferir no botão "Meu Histórico", ao efetuar o login com sua ID Profissional. Lá estarão todos os seus agendamentos realizados.
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>

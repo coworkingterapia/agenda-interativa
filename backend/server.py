@@ -144,6 +144,8 @@ async def create_reservas(request: ReservasCreateRequest):
     """
     Cria reservas no MongoDB e sincroniza com Google Calendar
     """
+    from datetime import date as dt_date
+    
     reservas_criadas = []
     event_ids_criados = []
     
@@ -154,6 +156,23 @@ async def create_reservas(request: ReservasCreateRequest):
         logging.warning(f"Google Calendar não disponível: {e}")
         google_calendar_disponivel = False
     
+    hoje = dt_date.today()
+    
+    for reserva_data in request.reservas:
+        try:
+            data_reserva = dt_date.fromisoformat(reserva_data.data)
+            
+            if data_reserva < hoje:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Data retroativa não permitida: {reserva_data.data}. Não é possível fazer reservas para datas passadas."
+                )
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Formato de data inválido: {reserva_data.data}"
+            )
+        
     for reserva_data in request.reservas:
         reserva_obj = Reserva(**reserva_data.model_dump())
         

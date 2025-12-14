@@ -154,77 +154,77 @@ backend:
           comment: "Backend correctly handles invalid data and returns appropriate error codes (400/422 for malformed requests)."
 
 frontend:
-  - task: "WhatsApp Message Generation"
+  - task: "Professional ID Login Flow"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/Resumo.js"
+    working: "NA"
+    file: "/app/frontend/src/pages/Home.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
+        - working: "NA"
           agent: "testing"
-          comment: "WhatsApp message generation working correctly. Message contains all required information: Professional ID (011-K), Name (Dra. Yasmin Melo), Date (15 de dezembro de 2025), Time (10:00), Room (Sala 03), Extra time (+15 minutos), Values (R$ 38,00), Payment method (Antecipado), and Payment link (https://mpago.la/2AdQC8h)."
+          comment: "Need to test login flow with ID 011-K to access the application."
 
-  - task: "WhatsApp URL Generation"
+  - task: "Calendar Date Selection"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/Resumo.js"
+    working: "NA"
+    file: "/app/frontend/src/pages/Calendario.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
+        - working: "NA"
           agent: "testing"
-          comment: "WhatsApp URL generation working correctly. URL format is correct (https://wa.me/5561996082572?text=...), message is properly encoded, and URL length is acceptable (989 characters)."
+          comment: "Need to test calendar navigation and today's date selection functionality."
 
-  - task: "Payment Link Selection Logic"
+  - task: "Horarios Page Time Slot Display"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/Resumo.js"
-    stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "Payment link selection logic working correctly. For antecipado payment with 15 minutes extra, correctly selects https://mpago.la/2AdQC8h."
-
-  - task: "Resumo Page Accessibility"
-    implemented: true
-    working: true
-    file: "/app/frontend/src/pages/Resumo.js"
+    working: "NA"
+    file: "/app/frontend/src/pages/Horarios.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
+        - working: "NA"
           agent: "testing"
-          comment: "Resumo page (CARD 8) is accessible at https://proagenda-4.preview.emergentagent.com/resumo and loads correctly."
+          comment: "Need to test time slot rendering and disabled state detection."
 
-  - task: "Ok Reservar Button Flow"
+  - task: "Expediente Encerrado Popup Logic"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/Resumo.js"
+    working: "NA"
+    file: "/app/frontend/src/pages/Horarios.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
+        - working: "NA"
           agent: "testing"
-          comment: "Button 'Ok, reservar' functionality implemented correctly. Should trigger handleOkReservar(), open orientation popup with correct title 'Confirmação de Agendamento' and proper message text."
+          comment: "Need to test popup appearance when all time slots are disabled, 2-second delay, and proper content display."
 
-  - task: "Enviar Button WhatsApp Integration"
+  - task: "Expediente Encerrado Popup Back Button"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/Resumo.js"
+    working: "NA"
+    file: "/app/frontend/src/pages/Horarios.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
+        - working: "NA"
           agent: "testing"
-          comment: "Button 'Enviar' in popup correctly calls salvarReservasNoBanco(), generates WhatsApp URL, and should call window.open() to open WhatsApp Web in new tab/window."
+          comment: "Need to test 'Voltar' button functionality to redirect back to calendar page."
+
+  - task: "HorariosGrid Disabled State Detection"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/HorariosGrid.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Need to test logic that determines when all time slots are disabled and triggers parent callback."
 
 metadata:
   created_by: "testing_agent"

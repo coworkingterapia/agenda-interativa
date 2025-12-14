@@ -174,21 +174,29 @@ def test_reservations_with_google_calendar():
             data = response.json()
             print_success(f"Reservation created successfully: {data['message']}")
             
-            # Check Google Calendar sync results
+            # Check Google Calendar sync results - EXACT USER REQUIREMENTS
             google_synced = data.get("google_calendar_synced", 0)
             event_ids = data.get("event_ids", [])
             
-            if google_synced > 0:
-                print_success(f"Google Calendar sync successful: {google_synced} event(s) created")
-                if event_ids:
-                    print_info(f"Event IDs: {event_ids}")
-                    # Store the first event ID for deletion test
-                    global test_event_id
-                    test_event_id = event_ids[0]
-                else:
-                    print_warning("No event IDs returned despite successful sync")
+            print_info(f"Response data: {json.dumps(data, indent=2)}")
+            
+            # VERIFICAR: Response tem "google_calendar_synced": 1 ✅
+            if google_synced == 1:
+                print_success(f"✅ VERIFICADO: google_calendar_synced = {google_synced}")
             else:
-                print_warning("No Google Calendar events were created")
+                print_error(f"❌ FALHOU: google_calendar_synced = {google_synced}, esperado = 1")
+                return False
+            
+            # VERIFICAR: Response tem array "event_ids" com pelo menos 1 ID ✅
+            if event_ids and len(event_ids) >= 1:
+                print_success(f"✅ VERIFICADO: event_ids array com {len(event_ids)} ID(s): {event_ids}")
+                # Store the first event ID for deletion test
+                global test_event_id
+                test_event_id = event_ids[0]
+                print_info(f"Event ID capturado para teste de cancelamento: {test_event_id}")
+            else:
+                print_error(f"❌ FALHOU: event_ids array vazio ou inexistente: {event_ids}")
+                return False
             
             # Verify the reservation was saved with google_event_id
             print_info("Verifying reservation was saved with Google Calendar data...")

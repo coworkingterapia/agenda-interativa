@@ -104,13 +104,15 @@ export default function Calendar({ onSelectDate }) {
       const isFeriadoDia = isFeriado(dia, mes + 1);
       const isWeekendDia = isWeekend(dataCompleta);
       const hasReserva = temReserva(dia);
+      const dataPassada = isDataPassada(dia);
       
       dias.push({
         dia,
         mesAtual: true,
-        desabilitado: isPast || isFuture || isFeriadoDia,
+        desabilitado: isPast || isFuture || isFeriadoDia || dataPassada,
         isWeekend: isWeekendDia,
-        hasReserva
+        hasReserva,
+        dataPassada
       });
     }
     

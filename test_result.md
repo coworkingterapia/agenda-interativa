@@ -127,7 +127,43 @@ backend:
     status_history:
         - working: true
           agent: "testing"
-          comment: "API endpoint /api/reservas working correctly. Successfully creates reservations with test data (ID: 011-K, Date: 2025-12-15, Time: 10:00, Room: 03, Extra: 15min, Value: R$ 38.00). Reservation saved to database and verified."
+          comment: "API endpoint /api/reservas working correctly. Successfully creates reservations with test data (ID: 011-K, Date: 2025-12-20, Time: 14:00-15:15, Room: 03, Extra: 15min, Value: R$ 38.00). Reservation saved to database and verified. Google Calendar sync attempted but failed due to invalid credentials."
+
+  - task: "Google Calendar Integration"
+    implemented: true
+    working: false
+    file: "/app/backend/google_calendar.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "Google Calendar integration implemented but not working. Credentials file exists at /app/backend/agendaconsult-481122-c9b54cd92f0b.json but contains invalid/corrupted private key. Error: 'Could not deserialize key data. ASN.1 parsing error: short data (needed at least 153 additional bytes)'. The private key appears to be **mocked** or truncated. Reservation creation works but google_calendar_synced returns 0 and no event_ids are generated."
+
+  - task: "Reservations by Date API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "API endpoint /api/reservas-por-data working correctly. Successfully retrieves reservations by date. Tested with date 2025-12-20 and correctly returned reservation data including ID, professional info, time slots, room, and value. google_event_id field is present but null due to Google Calendar sync failure."
+
+  - task: "Reservation Cancellation API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "API endpoint DELETE /api/reservas/{id} working correctly. Successfully cancels reservations and removes them from database. Returns proper response with success: true, message, and google_calendar_deleted: false (since Google Calendar sync is not working). Tested with reservation ID c5602ded-89a0-409f-bfee-e02ecd3e7602."
 
   - task: "CORS Configuration"
     implemented: true

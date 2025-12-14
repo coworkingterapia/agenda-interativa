@@ -127,32 +127,52 @@ export default function Home() {
     return 'bg-blue-50 border-blue-300';
   };
 
-  const cancelarAgendamento = async (agendamentoId) => {
-    if (!window.confirm('Tem certeza que deseja cancelar este agendamento?')) {
+  const carregarCreditos = async (idProfissional) => {
+    try {
+      const response = await axios.get(`${API}/creditos/${idProfissional}`);
+      setCreditos(response.data.creditos || 0);
+    } catch (error) {
+      console.error('Erro ao carregar créditos:', error);
+      setCreditos(0);
+    }
+  };
+
+  const desmarcarReserva = async (reserva) => {
+    if (!window.confirm('Tem certeza que deseja desmarcar esta reserva?')) {
       return;
     }
     
     try {
-      await axios.delete(`${API}/reservas/${agendamentoId}`);
+      const response = await axios.post(`${API}/reservas/${reserva.id}/desmarcar`);
       
       const idProfissional = sessionStorage.getItem('idProfissional');
       const chave = `historico_agendamentos_${idProfissional}`;
       const historicoAtual = JSON.parse(localStorage.getItem(chave) || '[]');
       
       const historicoAtualizado = historicoAtual.map(item => 
-        item.id === agendamentoId 
-          ? { ...item, status: 'cancelado' }
+        item.id === reserva.id 
+          ? { 
+              ...item, 
+              status_reserva: 'cancelado',
+              data_cancelamento: response.data.data_cancelamento,
+              hora_cancelamento: response.data.hora_cancelamento,
+              credito_gerado: response.data.credito_gerado
+            }
           : item
       );
       
       localStorage.setItem(chave, JSON.stringify(historicoAtualizado));
-      
       setHistorico(historicoAtualizado);
       
-      alert('Agendamento cancelado com sucesso!');
+      if (response.data.credito_gerado > 0) {
+        await carregarCreditos(idProfissional);
+        alert(`✅ Reserva desmarcada!\n\nCrédito gerado: R$ ${response.data.credito_gerado.toFixed(2).replace('.', ',')}\n\nVocê pode usar este crédito em próximas reservas.`);
+      } else {
+        alert('✅ Reserva desmarcada com sucesso!');
+      }
     } catch (error) {
-      console.error('Erro ao cancelar agendamento:', error);
-      alert('Erro ao cancelar agendamento. Tente novamente.');
+      console.error('Erro ao desmarcar reserva:', error);
+      alert('❌ Erro ao desmarcar reserva. Tente novamente.');
     }
   };
 

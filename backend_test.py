@@ -298,98 +298,43 @@ def test_reservation_cancellation_with_google_calendar():
         print_error(f"Failed to test reservation cancellation: {e}")
         return False
 
-def test_whatsapp_url_generation():
-    """Test WhatsApp URL generation logic"""
-    print_test_header("WhatsApp URL Generation Logic")
+def test_reservations_by_date_endpoint():
+    """Test the reservations by date endpoint"""
+    print_test_header("Reservations by Date Endpoint")
     
-    # Test data matching the user's requirements
-    test_data = {
-        "id_profissional": "011-K",
-        "profissional_nome": "Yasmin Melo",
-        "profissional_status": "Dra.",
-        "data": "2025-12-15",
-        "horario": "10:00",
-        "sala": "03",
-        "acrescimo_minutos": 15,
-        "valor_acrescimo": 8.0,
-        "valor_unitario": 38.0,
-        "forma_pagamento": "antecipado",
-        "valor_total": 38.0,
-        "sem_recorrencia": True
-    }
-    
-    # Generate the message text as it would be in the frontend
-    texto_resumo = f"""*Informacoes Pessoais*
-
-ID Profissional: *{test_data['id_profissional']}*
-Nome: *{test_data['profissional_status']} {test_data['profissional_nome']}*
-
-Informacoes do Agendamento
-Data: *15 de dezembro de 2025*
-Dia: *Segunda-feira*
-Horario: *{test_data['horario']}*
-Consultorio: *Sala 03 (com maca)*
-
-Tempo e Valores
-Acrescimo de tempo: *+{test_data['acrescimo_minutos']} minutos*
-Valor acrescimo: *R$ {test_data['valor_acrescimo']:.2f}*
-
-Recorrencia
-Atendimento recorrente: *Sem recorrencia*
-Valor unitario: *R$ {test_data['valor_unitario']:.2f}*
-Quantidade de atendimentos: *1 atendimento*
-Datas dos atendimentos:
-*15/12/2025 - Segunda-feira - {test_data['horario']} - Sala 03 (com maca)*
-
-Pagamento
-Forma de pagamento: *Antecipado (pre)*
-Adicional pagamento: *R$ 0,00*
-Valor total: *R$ {test_data['valor_total']:.2f}*
-
-Link de pagamento: *https://mpago.la/2AdQC8h*"""
-    
-    # Generate WhatsApp URL
-    telefone = '5561996082572'
-    whatsapp_url = f"https://wa.me/{telefone}?text={urllib.parse.quote(texto_resumo)}"
-    
-    print_success("WhatsApp URL generated successfully")
-    print_info(f"Phone number: {telefone}")
-    print_info(f"URL length: {len(whatsapp_url)} characters")
-    
-    # Check if URL is valid
-    if whatsapp_url.startswith("https://wa.me/5561996082572?text="):
-        print_success("URL format is correct")
-    else:
-        print_error("URL format is incorrect")
-        return False
-    
-    # Check if message contains key information
-    encoded_message = urllib.parse.quote(texto_resumo)
-    key_checks = [
-        ("ID Profissional", "011-K" in encoded_message),
-        ("Professional Name", "Yasmin%20Melo" in encoded_message or "Yasmin Melo" in texto_resumo),
-        ("Date", "15%20de%20dezembro" in encoded_message or "15 de dezembro" in texto_resumo),
-        ("Time", "10%3A00" in encoded_message or "10:00" in texto_resumo),
-        ("Room", "Sala%2003" in encoded_message or "Sala 03" in texto_resumo),
-        ("Value", "38%2C00" in encoded_message or "38,00" in texto_resumo),
-        ("Payment Link", "mpago.la" in encoded_message)
-    ]
-    
-    all_checks_passed = True
-    for check_name, check_result in key_checks:
-        if check_result:
-            print_success(f"Message contains {check_name}")
+    try:
+        # Test with a specific date
+        test_date = "2025-12-20"
+        
+        print_info(f"Fetching reservations for date: {test_date}")
+        response = requests.get(
+            f"{API_BASE}/reservas-por-data",
+            params={"data": test_date},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            reservations = response.json()
+            print_success(f"Successfully fetched reservations for {test_date}")
+            print_info(f"Found {len(reservations)} reservation(s)")
+            
+            # If we have reservations, show details
+            for i, reservation in enumerate(reservations):
+                print_info(f"  Reservation {i+1}:")
+                print_info(f"    - ID: {reservation.get('id')}")
+                print_info(f"    - Professional: {reservation.get('nome_profissional')}")
+                print_info(f"    - Time: {reservation.get('horario_inicio')} - {reservation.get('horario_fim')}")
+                print_info(f"    - Room: {reservation.get('sala')}")
+                print_info(f"    - Google Event ID: {reservation.get('google_event_id', 'None')}")
+            
+            return True
         else:
-            print_error(f"Message missing {check_name}")
-            all_checks_passed = False
-    
-    if all_checks_passed:
-        print_success("All message content checks passed")
-        print_info("Sample WhatsApp URL (truncated):")
-        print_info(f"{whatsapp_url[:100]}...")
-        return True
-    else:
-        print_error("Some message content checks failed")
+            print_error(f"Failed to fetch reservations. Status: {response.status_code}")
+            print_error(f"Response: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print_error(f"Failed to test reservations by date endpoint: {e}")
         return False
 
 def test_cors_configuration():

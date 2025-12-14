@@ -100,8 +100,12 @@ export default function Home() {
     }
   };
 
-  const abrirHistorico = () => {
+  const abrirHistorico = async () => {
     carregarHistorico();
+    const idProfissional = sessionStorage.getItem('idProfissional');
+    if (idProfissional) {
+      await carregarCreditos(idProfissional);
+    }
     setShowHistoricoModal(true);
   };
 

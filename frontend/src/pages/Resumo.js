@@ -207,12 +207,16 @@ export default function Resumo() {
         });
         
         localStorage.setItem(chaveHistorico, JSON.stringify(historicoAtual));
+        return { success: true };
       } else {
-        const errorText = await response.text();
-        console.error('Erro ao salvar reservas:', errorText);
+        const errorData = await response.json();
+        const errorMessage = errorData.detail || 'Erro ao salvar reservas';
+        console.error('Erro ao salvar reservas:', errorMessage);
+        return { success: false, error: errorMessage };
       }
     } catch (error) {
       console.error('Erro ao salvar reservas:', error);
+      return { success: false, error: error.message || 'Erro ao conectar com o servidor' };
     }
   };
 

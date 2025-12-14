@@ -24,6 +24,7 @@ export default function Home() {
   const [profissionalStatus, setProfissionalStatus] = useState("");
   const [showHistoricoModal, setShowHistoricoModal] = useState(false);
   const [historico, setHistorico] = useState([]);
+  const [creditos, setCreditos] = useState(0);
 
   const input1Ref = useRef(null);
   const input2Ref = useRef(null);

@@ -212,6 +212,62 @@ def test_reservations_with_google_calendar():
         print_error(f"Failed to test reservations with Google Calendar: {e}")
         return False
 
+def test_database_verification():
+    """Test database verification - EXACT USER REQUIREMENTS"""
+    print_test_header("TESTE 2: Verificação no Database")
+    
+    test_date = "2025-12-21"
+    
+    try:
+        print_info(f"Verificando reservas para data: {test_date}")
+        response = requests.get(
+            f"{API_BASE}/reservas-por-data",
+            params={"data": test_date},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            reservations = response.json()
+            print_info(f"Response: {json.dumps(reservations, indent=2)}")
+            
+            if len(reservations) > 0:
+                reservation = reservations[0]
+                
+                # VERIFICAR: Reserva criada aparece na lista
+                print_success("✅ VERIFICADO: Reserva criada aparece na lista")
+                
+                # VERIFICAR: Campo google_event_id está presente e NÃO é null
+                google_event_id = reservation.get('google_event_id')
+                if google_event_id is not None and google_event_id != "":
+                    print_success(f"✅ VERIFICADO: Campo google_event_id presente e não-null: {google_event_id}")
+                    
+                    # VERIFICAR: Campo google_event_id contém um ID válido do Google Calendar
+                    if isinstance(google_event_id, str) and len(google_event_id) > 10:
+                        print_success(f"✅ VERIFICADO: google_event_id contém ID válido do Google Calendar")
+                        
+                        # Store reservation ID for deletion test
+                        global test_reservation_id
+                        test_reservation_id = reservation.get('id')
+                        print_info(f"Reservation ID capturado para teste de cancelamento: {test_reservation_id}")
+                        
+                        return True
+                    else:
+                        print_error(f"❌ FALHOU: google_event_id não parece ser um ID válido: {google_event_id}")
+                        return False
+                else:
+                    print_error(f"❌ FALHOU: Campo google_event_id é null ou ausente: {google_event_id}")
+                    return False
+            else:
+                print_error("❌ FALHOU: Nenhuma reserva encontrada na lista")
+                return False
+        else:
+            print_error(f"❌ FALHOU: Erro ao buscar reservas: {response.status_code}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print_error(f"❌ FALHOU: Erro de conexão: {e}")
+        return False
+
 def test_reservation_cancellation_with_google_calendar():
     """Test reservation cancellation with Google Calendar event deletion"""
     print_test_header("Reservation Cancellation + Google Calendar Deletion")

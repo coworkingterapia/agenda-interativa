@@ -286,8 +286,7 @@ test_plan:
     - "Reservations Creation API"
     - "Reservations by Date API"
     - "Reservation Cancellation API"
-  stuck_tasks:
-    - "Google Calendar Integration"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 

@@ -147,15 +147,6 @@ export default function Resumo() {
     return dias[data.getDay()];
   };
 
-  const formatarDatasRecorrentesParaWhatsApp = () => {
-    return dadosResumo.datasRecorrentes.map(dataStr => {
-      const dataFormatada = formatarDataCurta(dataStr);
-      const diaSemana = getDiaSemanaPorExtenso(dataStr);
-      const sala = getSalaDescricao(dadosResumo.sala);
-      return `*${dataFormatada} - ${diaSemana} - ${dadosResumo.horario} - ${sala}*`;
-    }).join('\n');
-  };
-
   const calcularHorarioFinal = () => {
     const [hora, minuto] = dadosResumo.horario.split(':').map(Number);
     const duracaoTotal = 60 + dadosResumo.acrescimoMinutos;

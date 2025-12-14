@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend Test Suite for Agenda Interativa WhatsApp Integration
-Tests the complete flow from reservation creation to WhatsApp message sending
+Backend Test Suite for Agenda Interativa Google Calendar Integration
+Tests the complete flow from reservation creation to Google Calendar synchronization
 """
 
 import requests
